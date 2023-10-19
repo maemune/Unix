@@ -1,4 +1,6 @@
 #!/bin/bash
+#wget https://raw.githubusercontent.com/maemune/Proxmox/main/init-setup.sh && nano ./init-setup.sh && chmod u+x ./init-setup.sh && ./init-setup.sh
+
 echo '#!/bin/bash
 apt-get update
 apt -y full-upgrade
