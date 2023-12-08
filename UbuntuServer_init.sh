@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#wget https://raw.githubusercontent.com/maemune/Unix/main/UbuntuServer_init.sh && nano ./Init_Setup.sh && chmod u+x ./Init_Setup.sh && ./Init_Setup.sh
+#wget https://raw.githubusercontent.com/maemune/Unix/main/UbuntuServer_init.sh && nano ./UbuntuServer_init.sh && chmod u+x ./UbuntuServer_init.sh && ./UbuntuServer_init.sh
 
 # Setting you info
 GITHUB_KEYS_URL="https://github.com/maemune.keys"
