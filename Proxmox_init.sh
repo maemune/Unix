@@ -1,5 +1,5 @@
 #!/bin/bash
-#wget https://raw.githubusercontent.com/maemune/Unix/main/Proxmox_init.sh && nano ./Proxmox_init.sh && chmod u+x ./Proxmox_init && ./Proxmox_init
+#wget https://raw.githubusercontent.com/maemune/Unix/main/Proxmox_init.sh && nano ./Proxmox_init.sh && chmod u+x ./Proxmox_init.sh  && ./Proxmox_init
 
 echo '#!/bin/bash
 apt-get update
