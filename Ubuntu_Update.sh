@@ -1,5 +1,5 @@
 #!/bin/bash
-#wget https://raw.githubusercontent.com/maemune/Unix/main/UbuntuServer_update.sh && nano ./Update.sh && chmod u+x ./Update.sh && ./Update.sh
+#wget https://raw.githubusercontent.com/maemune/Unix/main/Ubuntu_Update.sh && nano ./Ubuntu_Update.sh && chmod u+x ./Ubuntu_Update.sh && ./Ubuntu_Update.sh
 
 # Setting you info
 #PASSWORD=""
