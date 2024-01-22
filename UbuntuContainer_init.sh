@@ -105,7 +105,11 @@ chown -R ubuntu:ubuntu /home/ubuntu/
 chmod 600 /home/ubuntu/.ssh/authorized_keys
 systemctl restart sshd.service
 
-curl https://raw.githubusercontent.com/maemune/Unix/main/Ubuntu_update.sh > /home/ubuntu/Update.sh && nano /home/ubuntu/Update.sh && chown -R ubuntu:ubuntu /home/ubuntu/Update.sh && chmod u+x /home/ubuntu/Update.sh && /home/ubuntu/Update.sh
+echo '#!/bin/bash
+apt-get update
+apt -y full-upgrade
+apt -y autoremove
+' > /root/Update.sh && chmod u+x /root/Update.sh && ./Update.sh
 
 su ubuntu
 crontab -l > {tmpfile}
