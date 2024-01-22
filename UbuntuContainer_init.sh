@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#wget https://raw.githubusercontent.com/maemune/Unix/main/UbuntuContainer_init.sh && nano ./Init_Setup.sh && chmod u+x ./Init_Setup.sh && ./Init_Setup.sh
+#wget https://raw.githubusercontent.com/maemune/Unix/main/UbuntuContainer_init.sh && nano ./UbuntuContainer_init.sh && chmod u+x ./UbuntuContainer_init.sh && ./UbuntuContainer_init.sh
 
 # Setting you info
 GITHUB_KEYS_URL="https://github.com/maemune.keys"
@@ -105,12 +105,6 @@ chown -R ubuntu:ubuntu /home/ubuntu/
 chmod 600 /home/ubuntu/.ssh/authorized_keys
 systemctl restart sshd.service
 
-echo '#!/bin/bash
-apt-get update
-apt -y full-upgrade
-apt -y autoremove
-' > /root/Update.sh && chmod u+x /root/Update.sh && ./Update.sh
-
 su ubuntu
 crontab -l > {tmpfile}
 echo "*/5 * * * * curl ${GITHUB_KEYS_URL} > /home/ubuntu/.ssh/authorized_keys && chown ubuntu:ubuntu /home/ubuntu/.ssh/authorized_keys && chmod 600 /home/ubuntu/.ssh/authorized_keys
@@ -118,6 +112,12 @@ echo "*/5 * * * * curl ${GITHUB_KEYS_URL} > /home/ubuntu/.ssh/authorized_keys &&
 crontab {tmpfile}
 rm {tmpfile}
 exit
+
+echo '#!/bin/bash
+apt-get update
+apt -y full-upgrade
+apt -y autoremove
+' > /home/ubuntu/Ubuntu_Update.sh && chmod u+x /home/ubuntu/Ubuntu_Update.sh && /home/ubuntu/Ubuntu_Update.sh
 
 lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
 resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
