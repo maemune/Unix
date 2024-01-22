@@ -26,7 +26,7 @@ get_input_with_confirmation ip_address "Please enter your new IP address"
 sudo hostnamectl set-hostname $hostname
 
 netplan_file="/etc/netplan/00-installer-config.yaml"
-cur_ip = $(ip addr show | awk '/inet 192/ {gsub(/\/.*/, "", $2); print $2}')
+cur_ip=$(ip addr show | awk '/inet 192/ {gsub(/\/.*/, "", $2); print $2}')
 sudo sed -i "s/$cur_ip/$ip_address/g" "$netplan_file"
 
 sudo netplan apply
