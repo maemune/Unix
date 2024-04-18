@@ -1,4 +1,7 @@
 #!/bin/bash
+
+#wget https://raw.githubusercontent.com/maemune/Unix/main/Refresh_host.sh && nano ./Refresh_host.sh && chmod u+x ./Refresh_host.sh && ./Refresh_host.sh
+
 get_input_with_confirmation() {
     local input_var=$1
     local prompt=$2
