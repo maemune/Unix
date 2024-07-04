@@ -7,9 +7,11 @@ GITHUB_KEYS_URL="https://github.com/maemune.keys"
 PASSWORD=""
 
 # Update
-perl -p -i.bak -e 's%(deb(?:-src|)\s+)https?://(?!archive\.canonical\.com|security\.ubuntu\.com)[^\s]+%$1http://ftp.riken.jp/Linux/ubuntu/%' /etc/apt/sources.list 
+#sudo perl -p -i.bak -e 's%(deb(?:-src|)\s+)https?://(?!archive\.canonical\.com|security\.ubuntu\.com)[^\s]+%$1http://ftp.riken.jp/Linux/ubuntu/%' /etc/apt/sources.list
+# 24.04
+#sudo sed -i.bak -r 's@http://(jp\.)?archive\.ubuntu\.com/ubuntu/?@https://ftp.udx.icscoe.jp/Linux/ubuntu/@g' /etc/apt/sources.list.d/ubuntu.sources
 apt-get update
-apt -y install openssh-server curl unzip
+apt -y install openssh-server curl unzip qemu-guest-agent
 
 # Timezone Setup
 timedatectl set-timezone Asia/Tokyo
