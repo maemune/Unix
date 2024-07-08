@@ -101,11 +101,13 @@ chown ubuntu:ubuntu /home/ubuntu/.ssh/authorized_keys
 chmod 600 /home/ubuntu/.ssh/authorized_keys
 sudo systemctl restart sshd.service
 
-wget https://raw.githubusercontent.com/maemune/Unix/main/Update.sh && nano ./Update.sh && chmod u+x ./Update.sh && ./Update.sh
+wget https://raw.githubusercontent.com/maemune/Unix/main/Generat_SSH.sh && nano ./Generat_SSH.sh && chmod u+x ./Generat_SSH.sh && ./Generat_SSH.sh
+wget https://raw.githubusercontent.com/maemune/Unix/main/Refresh_host.sh && nano ./Refresh_host.sh && chmod u+x ./Refresh_host.sh
+wget https://raw.githubusercontent.com/maemune/Unix/main/Update.sh && nano ./Update.sh && chmod u+x ./Update.sh
 
 crontab -l > {tmpfile}
 echo "*/5 * * * * curl ${GITHUB_KEYS_URL} > /home/ubuntu/.ssh/authorized_keys && chown ubuntu:ubuntu /home/ubuntu/.ssh/authorized_keys && chmod 600 /home/ubuntu/.ssh/authorized_keys
-0 3 */2 * * /home/ubuntu/Ubuntu_Update.sh" >> {tmpfile}
+0 3 */2 * * /home/ubuntu/Update.sh" >> {tmpfile}
 crontab {tmpfile}
 rm {tmpfile}
 
@@ -114,4 +116,5 @@ sudo lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
 sudo resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
 
 # Logout
+./Update.sh
 sudo reboot now
