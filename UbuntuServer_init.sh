@@ -101,7 +101,7 @@ chown ubuntu:ubuntu /home/ubuntu/.ssh/authorized_keys
 chmod 600 /home/ubuntu/.ssh/authorized_keys
 sudo systemctl restart sshd.service
 
-wget https://raw.githubusercontent.com/maemune/Unix/main/Ubuntu_Update.sh && nano ./Ubuntu_Update.sh && chmod u+x ./Ubuntu_Update.sh
+wget https://raw.githubusercontent.com/maemune/Unix/main/Update.sh && nano ./Update.sh && chmod u+x ./Update.sh && ./Update.sh
 
 crontab -l > {tmpfile}
 echo "*/5 * * * * curl ${GITHUB_KEYS_URL} > /home/ubuntu/.ssh/authorized_keys && chown ubuntu:ubuntu /home/ubuntu/.ssh/authorized_keys && chmod 600 /home/ubuntu/.ssh/authorized_keys
