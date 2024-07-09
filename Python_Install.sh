@@ -23,9 +23,9 @@ rm get-pip.py
 
 # 必要に応じてpipコマンドを移動
 sudo mv /usr/local/bin/pip /usr/local/bin/pip_ && sudo mv /usr/local/bin/pip3.12 /usr/local/bin/pip
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.12 0
 
 # 環境変数の更新
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.12 0
 echo 'export PATH=$PATH:/usr/local/bin' >> ~/.profile
 source ~/.profile
 
