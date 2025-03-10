@@ -17,7 +17,7 @@ sudo apt -y install openssh-server curl unzip qemu-guest-agent
 sudo timedatectl set-timezone Asia/Tokyo
 
 # noPasswd ubuntu
-echo 'ubuntu ALL=NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo
+echo 'maemune ALL=NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo
 
 # Firewall Allow
 sudo ufw allow 'OpenSSH'
