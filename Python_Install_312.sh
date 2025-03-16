@@ -18,25 +18,15 @@ sudo apt install -y python3.12 python3.12-dev python3.12-venv
 sudo apt-get install -y libreadline-dev zlib1g-dev libncursesw5-dev libssl-dev libsqlite3-dev libgdbm-dev libc6-dev libbz2-dev
 sudo apt-get install -y build-essential libffi-dev libexpat1-dev liblzma-dev python3-testresources
 
-# pipのインストール
-curl -sS https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-sudo python3.12 get-pip.py
-sudo python3.12 -m pip install --upgrade pip
-rm get-pip.py
-
-# 必要に応じてpipコマンドを移動
-if [ -f /usr/local/bin/pip ]; then
-    sudo mv /usr/local/bin/pip /usr/local/bin/pip_
-fi
-if [ -f /usr/local/bin/pip3.12 ]; then
-    sudo mv /usr/local/bin/pip3.12 /usr/local/bin/pip
-fi
+# pipx のインストール
+sudo apt install -y pipx
+pipx ensurepath
 
 # 環境変数の更新
-sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
-echo 'export PATH=$PATH:/usr/local/bin' >> ~/.profile
-
-# 環境変数を反映
+echo 'export PATH=$PATH:/home/$USER/.local/bin' >> ~/.profile
 source ~/.profile
+
+# pipx の動作確認
+pipx --version
 
 exit
