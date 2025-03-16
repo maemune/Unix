@@ -12,7 +12,7 @@ sudo add-apt-repository -y ppa:deadsnakes/ppa
 sudo apt update
 
 # Python 3.12のインストール
-sudo apt install -y python3.12 python3.12-dev python3.12-distutils
+sudo apt install -y python3.12 python3.12-dev python3.12-venv
 
 # 必要な開発ツールのインストール
 sudo apt-get install -y libreadline-dev zlib1g-dev libncursesw5-dev libssl-dev libsqlite3-dev libgdbm-dev libc6-dev libbz2-dev
