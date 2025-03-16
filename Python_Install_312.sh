@@ -18,6 +18,9 @@ sudo apt install -y python3.12 python3.12-dev python3.12-venv
 sudo apt-get install -y libreadline-dev zlib1g-dev libncursesw5-dev libssl-dev libsqlite3-dev libgdbm-dev libc6-dev libbz2-dev
 sudo apt-get install -y build-essential libffi-dev libexpat1-dev liblzma-dev python3-testresources
 
+# python コマンドを python3 にリンク
+sudo apt install -y python-is-python3
+
 # pipx のインストール
 sudo apt install -y pipx
 pipx ensurepath
