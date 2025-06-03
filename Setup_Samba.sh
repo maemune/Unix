@@ -16,3 +16,4 @@ sudo cat << EOF >> "$FILE_TO_EDIT"
 EOF
 
 echo "Lines added to $FILE_TO_EDIT"
+sudo smbpasswd -a maemune
