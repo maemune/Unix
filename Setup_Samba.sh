@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#https://github.com/maemune/Unix/blob/main/Setup_Samba.sh
 sudo apt install -y samba
 sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.bak
 sudo nano /etc/samba/smb.conf
