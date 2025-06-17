@@ -12,5 +12,4 @@ sudo nano /etc/samba/smb.conf
     guest ok = no
     read only = no
 """
-echo "Lines added to $FILE_TO_EDIT"
 sudo smbpasswd -a maemune
