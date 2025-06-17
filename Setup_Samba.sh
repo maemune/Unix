@@ -12,4 +12,5 @@ sudo nano /etc/samba/smb.conf
     guest ok = no
     read only = no
 """
+sudo ufw allow Samba
 sudo smbpasswd -a maemune
