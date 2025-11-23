@@ -7,11 +7,14 @@
 # 目的: 有線LAN (eth0) を優先し、ダウン時に Wi-Fi (wlan0) へ
 #       自動的に切り替える設定を Netplan に適用する。
 # 
-# 必須情報:
-WIFI_SSID="TP-Link-a"
-WIFI_PASS="TP-Link-0515"
-NETPLAN_FILE="/etc/netplan/99-failover.yaml"
+# 必須情報: 実行時にユーザー入力
 # =======================================================
+
+# --- SSID とパスワードの入力 ---
+read -p "Wi-Fi SSID を入力してください: " WIFI_SSID
+read -p "Wi-Fi パスワードを入力してください: " WIFI_PASS
+
+NETPLAN_FILE="/etc/netplan/99-failover.yaml"
 
 echo "--- ネットワーク設定を開始します ---"
 
@@ -58,7 +61,7 @@ fi
 echo "2. ファイルのパーミッションを 600 に設定中..."
 sudo chmod 600 ${NETPLAN_FILE}
 
-# 3. 設定の適用と検証
+# 3. 設定の構文チェックと適用
 echo "3. Netplan設定の構文チェックと適用..."
 
 # 構文チェック
