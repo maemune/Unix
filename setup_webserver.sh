@@ -5,7 +5,7 @@
 DOMAIN="goggle.mydns.jp"
 EMAIL="maemune1999@gmail.com" # Certbot用の連絡先メールアドレス
 USERNAME="maemune"
-PASSWORD="Maemune@1373" # このパスワードはスクリプト内に平文で保存されます。実行後にファイルを削除してください。
+# PASSWORD 変数は以下で動的に設定されます
 
 # ログ出力関数 (以前と同じ)
 log() {
@@ -16,6 +16,25 @@ log_error() {
     echo -e "\n\033[1;31m[ERROR]\033[0m $1"
     exit 1
 }
+
+# --- パスワード入力と検証 ---
+while true; do
+    read -sp "🔐 ベーシック認証用のパスワードを入力してください: " PASSWORD
+    echo
+    read -sp "🔐 確認のため、もう一度入力してください: " PASSWORD_CONFIRM
+    echo
+    
+    if [ "$PASSWORD" = "$PASSWORD_CONFIRM" ]; then
+        if [ -z "$PASSWORD" ]; then
+            log_error "パスワードを空白にすることはできません。"
+            continue
+        fi
+        log "パスワードの入力が確認されました。"
+        break
+    else
+        log_error "パスワードが一致しません。再度入力してください。"
+    fi
+done
 
 # --- 1. システムの準備とパッケージインストール ---
 log "システムのアップデートと必要なパッケージのインストールを開始します..."
@@ -39,6 +58,7 @@ fi
 
 # ベーシック認証ユーザー ($USERNAME) を設定 (パスワードはopensslでハッシュ化)
 log "ベーシック認証ユーザー ($USERNAME) を設定します..."
+# ユーザーが入力した $PASSWORD を使用
 HASH=$(echo "$PASSWORD" | openssl passwd -stdin -apr1)
 echo "$USERNAME:$HASH" | sudo tee /etc/apache2/.htpasswd > /dev/null
 
@@ -47,10 +67,7 @@ sudo chown root:www-data /etc/apache2/.htpasswd
 sudo chmod 640 /etc/apache2/.htpasswd
 
 # --- 3. CertbotによるSSL証明書の取得 ---
-# Certbotはドメイン名に基づいて設定を行うため、ローカルIPアドレスは直接使用しません。
-# ポート80/443がグローバルIP経由で到達可能であれば問題なく動作します。
 log "CertbotによるSSL証明書の取得を開始します ($DOMAIN)..."
-# --redirectオプションが000-default.confを自動でHTTPSリダイレクト設定に変更します。
 sudo certbot --apache -d "$DOMAIN" --non-interactive --agree-tos --email "$EMAIL" --redirect --hsts --staple-ocsp --no-eff-email
 
 if [ $? -ne 0 ]; then
@@ -62,8 +79,7 @@ log "HTTPS設定ファイルにベーシック認証を追加します..."
 
 SSL_CONF="/etc/apache2/sites-enabled/000-default-le-ssl.conf"
 
-# 以前のHTTPS設定を削除する処理（もしあれば）
-# 以前の実行で残骸が残っている場合に備え、念のため DocumentRoot より後ろの認証設定を削除してから追加
+# 以前の設定の残骸（ベーシック認証ブロック）を削除
 sudo sed -i '/<Directory \/var\/www\/html>/,/<\/Directory>/d' "$SSL_CONF"
 
 # 認証設定を DocumentRoot /var/www/html の直後に追加
@@ -81,5 +97,5 @@ sudo systemctl restart apache2
 log "\033[1;32m=== ✅ セットアップ完了 ===\033[0m"
 echo "アクセスURL: https://$DOMAIN/"
 echo "ユーザー名: $USERNAME"
-echo "パスワード: $PASSWORD"
+echo "パスワードは入力されたものです。"
 echo "サーバーの準備ができました。ブラウザでアクセスし、ベーシック認証が機能するか確認してください。"
