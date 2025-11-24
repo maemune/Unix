@@ -3,7 +3,7 @@
 
 # --- ユーザー定義変数 ---
 DOMAIN="goggle.mydns.jp"
-EMAIL="webmaster@$DOMAIN" # Certbot用の連絡先メールアドレス
+EMAIL="maemune1999@gmail.com" # Certbot用の連絡先メールアドレス
 USERNAME="maemune"
 PASSWORD="Maemune@1373" # このパスワードはスクリプト内に平文で保存されます。実行後にファイルを削除してください。
 
