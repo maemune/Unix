@@ -1,4 +1,5 @@
 #!/bin/bash
+#wget https://raw.githubusercontent.com/maemune/Unix/main/setup_webserver.sh && nano ./setup_webserver.sh && chmod u+x ./setup_webserver.sh && ./setup_webserver.sh
 
 # --- ユーザー定義変数 ---
 DOMAIN="goggle.mydns.jp"
