@@ -5,9 +5,10 @@
 DOMAIN="goggle.mydns.jp"
 EMAIL="maemune1999@gmail.com" # Certbot用の連絡先メールアドレス
 USERNAME="maemune"
+GITHUB_INDEX_URL="https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/index.html"
 # PASSWORD 変数は以下で動的に設定されます
 
-# ログ出力関数 (以前と同じ)
+# ログ出力関数
 log() {
     echo -e "\n\033[1;34m[INFO]\033[0m $1"
 }
@@ -39,21 +40,40 @@ done
 # --- 1. システムの準備とパッケージインストール ---
 log "システムのアップデートと必要なパッケージのインストールを開始します..."
 sudo apt update || log_error "apt updateに失敗しました。"
-sudo apt install -y apache2 certbot python3-certbot-apache libapache2-mod-auth-basic || log_error "パッケージのインストールに失敗しました。"
+# ufw と openssl を追加インストールします
+sudo apt install -y apache2 certbot python3-certbot-apache libapache2-mod-auth-basic wget ufw openssl || log_error "パッケージのインストールに失敗しました。"
 
 # 必要なモジュールの有効化
 sudo a2enmod ssl rewrite auth_basic authn_file
+
+# --- 2. ファイアウォール (UFW) の設定と有効化 ---
+log "ファイアウォール (UFW) の設定を開始します..."
+
+# SSHポート (22番) を許可 (Raspberry Piへのアクセス維持のため必須)
+sudo ufw allow 22/tcp
+
+# Apache Full (HTTP 80番と HTTPS 443番) を許可
+# Certbotが認証を通るため、80番の開放は必須です
+sudo ufw allow 'Apache Full'
+
+# UFWを有効化（対話形式にならないように強制的に 'y' を渡す）
+echo "y" | sudo ufw enable || log_error "UFWの有効化に失敗しました。"
+
+log "UFWが有効になり、SSH(22)とApache Full(80/443)が開放されました。"
+sudo ufw status verbose
+
+# Apacheの再起動
 sudo systemctl restart apache2
 
-# --- 2. Webサイトコンテンツとベーシック認証のセットアップ ---
+# --- 3. Webサイトコンテンツとベーシック認証のセットアップ ---
 log "Webサイトコンテンツとベーシック認証ファイルの準備を開始します..."
 
-# 添付された index.html を /var/www/html/ にコピー (このスクリプトと同じディレクトリにある前提)
-if [ -f "index.html" ]; then
-    sudo cp index.html /var/www/html/
-    log "index.html を /var/www/html/ に配置しました。"
-else
-    log_error "エラー: 'index.html' ファイルが見つかりません。スクリプトと同じディレクトリに配置してください。"
+# GitHubから index.html をダウンロード
+log "GitHub ($GITHUB_INDEX_URL) から index.html をダウンロードします..."
+sudo wget -O /var/www/html/index.html "$GITHUB_INDEX_URL"
+
+if [ $? -ne 0 ]; then
+    log_error "エラー: index.htmlのダウンロードに失敗しました。URLまたはネットワーク接続を確認してください。"
 fi
 
 # ベーシック認証ユーザー ($USERNAME) を設定 (パスワードはopensslでハッシュ化)
@@ -66,15 +86,16 @@ echo "$USERNAME:$HASH" | sudo tee /etc/apache2/.htpasswd > /dev/null
 sudo chown root:www-data /etc/apache2/.htpasswd
 sudo chmod 640 /etc/apache2/.htpasswd
 
-# --- 3. CertbotによるSSL証明書の取得 ---
+# --- 4. CertbotによるSSL証明書の取得 ---
 log "CertbotによるSSL証明書の取得を開始します ($DOMAIN)..."
+# Certbotが自動でApacheのルールを調整します
 sudo certbot --apache -d "$DOMAIN" --non-interactive --agree-tos --email "$EMAIL" --redirect --hsts --staple-ocsp --no-eff-email
 
 if [ $? -ne 0 ]; then
     log_error "Certbotによる証明書の取得に失敗しました。ポート転送とDNS設定を確認してください。"
 fi
 
-# --- 4. HTTPS設定ファイル (000-default-le-ssl.conf) の修正 ---
+# --- 5. HTTPS設定ファイル (000-default-le-ssl.conf) の修正 ---
 log "HTTPS設定ファイルにベーシック認証を追加します..."
 
 SSL_CONF="/etc/apache2/sites-enabled/000-default-le-ssl.conf"
@@ -85,7 +106,7 @@ sudo sed -i '/<Directory \/var\/www\/html>/,/<\/Directory>/d' "$SSL_CONF"
 # 認証設定を DocumentRoot /var/www/html の直後に追加
 sudo sed -i '/DocumentRoot \/var\/www\/html/a \ \ \ \ \ \ \ \ <Directory \/var\/www\/html>\n\ \ \ \ \ \ \ \ \ \ \ \ AuthType Basic\n\ \ \ \ \ \ \ \ \ \ \ \ AuthName \"Private Web Area\"\n\ \ \ \ \ \ \ \ \ \ \ \ AuthUserFile \/etc\/apache2\/.htpasswd\n\ \ \ \ \ \ \ \ \ \ \ \ Require valid-user\n\ \ \ \ \ \ \ \ <\/Directory>' "$SSL_CONF"
 
-# --- 5. Apache の設定確認と再起動 ---
+# --- 6. Apache の設定確認と再起動 ---
 log "Apacheの設定確認と再起動を実行します..."
 sudo apache2ctl configtest
 
