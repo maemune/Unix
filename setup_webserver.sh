@@ -41,7 +41,7 @@ done
 log "システムのアップデートと必要なパッケージのインストールを開始します..."
 sudo apt update || log_error "apt updateに失敗しました。"
 # ufw と openssl を追加インストールします
-sudo apt install -y apache2 certbot python3-certbot-apache libapache2-mod-auth-basic wget ufw openssl || log_error "パッケージのインストールに失敗しました。"
+sudo apt install -y apache2 certbot python3-certbot-apache wget ufw openssl || log_error "パッケージのインストールに失敗しました。"
 
 # 必要なモジュールの有効化
 sudo a2enmod ssl rewrite auth_basic authn_file
