@@ -11,7 +11,7 @@ GITHUB_KEYS_URL="https://github.com/maemune.keys"
 # 24.04
 #sudo sed -i.bak -r 's@http://(jp\.)?archive\.ubuntu\.com/ubuntu/?@https://ftp.udx.icscoe.jp/Linux/ubuntu/@g' /etc/apt/sources.list.d/ubuntu.sources
 sudo apt-get update
-sudo apt -y install openssh-server curl unzip
+sudo apt -y install openssh-server curl unzip qemu-guest-agent
 
 # Timezone Setup
 sudo timedatectl set-timezone Asia/Tokyo
