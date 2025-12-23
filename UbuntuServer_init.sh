@@ -17,7 +17,7 @@ sudo apt -y install openssh-server curl unzip qemu-guest-agent
 sudo timedatectl set-timezone Asia/Tokyo
 
 # noPasswd maemune
-echo 'maemune ALL=NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo
+echo 'ubuntu ALL=NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo
 
 # Firewall Allow
 sudo ufw allow 'OpenSSH'
@@ -95,10 +95,10 @@ else
 fi
 
 # User SSH Setup
-mkdir /home/maemune/.ssh
-curl ${GITHUB_KEYS_URL} > /home/maemune/.ssh/authorized_keys
-chown maemune:maemune /home/maemune/.ssh/authorized_keys
-chmod 600 /home/maemune/.ssh/authorized_keys
+mkdir /home/ubuntu/.ssh
+curl ${GITHUB_KEYS_URL} > /home/ubuntu/.ssh/authorized_keys
+chown ubuntu:ubuntu /home/ubuntu/.ssh/authorized_keys
+chmod 600 /home/ubuntu/.ssh/authorized_keys
 sudo systemctl restart sshd.service
 
 wget https://raw.githubusercontent.com/maemune/Unix/main/Generat_SSH.sh && nano ./Generat_SSH.sh && chmod u+x ./Generat_SSH.sh && ./Generat_SSH.sh
@@ -106,8 +106,8 @@ wget https://raw.githubusercontent.com/maemune/Unix/main/Refresh_host.sh && nano
 wget https://raw.githubusercontent.com/maemune/Unix/main/Update.sh && nano ./Update.sh && chmod u+x ./Update.sh
 
 crontab -l > {tmpfile}
-echo "*/5 * * * * curl ${GITHUB_KEYS_URL} > /home/maemune/.ssh/authorized_keys && chown maemune:maemune /home/maemune/.ssh/authorized_keys && chmod 600 /home/maemune/.ssh/authorized_keys
-0 3 */2 * * /home/maemune/Update.sh" >> {tmpfile}
+echo "*/5 * * * * curl ${GITHUB_KEYS_URL} > /home/ubuntu/.ssh/authorized_keys && chown ubuntu:ubuntu /home/ubuntu/.ssh/authorized_keys && chmod 600 /home/ubuntu/.ssh/authorized_keys
+0 3 */2 * * /home/ubuntu/Update.sh" >> {tmpfile}
 crontab {tmpfile}
 rm {tmpfile}
 
