@@ -95,5 +95,5 @@ sudo systemctl enable mysql
 
 echo "----------------------------------------------------------"
 echo "Setup & Tuning Complete."
-echo "InnoDB Buffer Pool: 2GB (Adjust in ${CONF_FILE} if needed)"
+echo "InnoDB Buffer Pool: 8GB (Adjust in ${CONF_FILE} if needed)"
 echo "----------------------------------------------------------"
