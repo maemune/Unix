@@ -11,110 +11,85 @@ GITHUB_KEYS_URL="https://github.com/maemune.keys"
 # 24.04
 #sudo sed -i.bak -r 's@http://(jp\.)?archive\.ubuntu\.com/ubuntu/?@https://ftp.udx.icscoe.jp/Linux/ubuntu/@g' /etc/apt/sources.list.d/ubuntu.sources
 sudo apt-get update
-sudo apt -y install openssh-server curl unzip qemu-guest-agent
+sudo apt -y install openssh-server curl unzip qemu-guest-agent ufw
 
-# Timezone Setup
+# Timezone
 sudo timedatectl set-timezone Asia/Tokyo
 
-# noPasswd maemune
+# sudo nopasswd
 echo 'ubuntu ALL=NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo
 
-# Firewall Allow
-sudo ufw allow 'OpenSSH'
+# Firewall
+sudo ufw allow OpenSSH
 echo 'y' | sudo ufw enable
 
-# SSH Setup
+# SSH setup
 SSH_CONFIG="/etc/ssh/sshd_config"
 SSH_CONFIG_BACKUP="/etc/ssh/sshd_config.bk"
 SSH_PORT_NUMBER="22"
 
-function change_setting () {
-  TARGET=$1
-  KEYWORD=$2
-  VALUE=$3
+change_setting() {
+  TARGET="$1"
+  KEYWORD="$2"
+  VALUE="$3"
 
-  EXIST=`grep "^${KEYWORD}" ${TARGET}`
-  EXIST_COMMENT=`grep "^#${KEYWORD}" ${TARGET}`
-
-  if [ ${#EXIST} -ne 0 ]; then
-    sed -i '/^'${KEYWORD}'/c '${KEYWORD}' '${VALUE}'' ${TARGET}
-  elif [ ${#EXIST_PERMIT_COMMENT} -ne 0 ]; then
-    sed -i '/^#'${KEYWORD}'/c '${KEYWORD}' '${VALUE}'' ${TARGET}  
+  if grep -q "^${KEYWORD}" "${TARGET}"; then
+    sudo sed -i "s|^${KEYWORD}.*|${KEYWORD} ${VALUE}|" "${TARGET}"
+  elif grep -q "^#${KEYWORD}" "${TARGET}"; then
+    sudo sed -i "s|^#${KEYWORD}.*|${KEYWORD} ${VALUE}|" "${TARGET}"
   else
-    echo -e "${KEYWORD} ${VALUE}" >> ${TARGET}
+    echo "${KEYWORD} ${VALUE}" | sudo tee -a "${TARGET}" >/dev/null
   fi
 }
-if [ -f ${SSH_CONFIG_BACKUP} ]; then
-  echo "SSH setting is already done."
-else
-  sudo cp -i ${SSH_CONFIG} ${SSH_CONFIG_BACKUP}
-  
-  # Port
-  change_setting ${SSH_CONFIG} Port ${SSH_PORT_NUMBER}
-  grep "^Port" ${SSH_CONFIG}
-  
-  # PermitRootLogin
-  change_setting ${SSH_CONFIG} PermitRootLogin no
-  grep "^PermitRootLogin" ${SSH_CONFIG}
 
-  # PasswordAuthentication
-  change_setting ${SSH_CONFIG} PasswordAuthentication no
-  grep "^PasswordAuthentication" ${SSH_CONFIG}
+if [ ! -f "${SSH_CONFIG_BACKUP}" ]; then
+  sudo cp "${SSH_CONFIG}" "${SSH_CONFIG_BACKUP}"
 
-  # ChallengeResponseAuthentication
-  change_setting ${SSH_CONFIG} ChallengeResponseAuthentication no
-  grep "^ChallengeResponseAuthentication" ${SSH_CONFIG}
-
-  # PermitEmptyPasswords
-  change_setting ${SSH_CONFIG} PermitEmptyPasswords no
-  grep "^PermitEmptyPasswords" ${SSH_CONFIG}
-
-  # SyslogFacility
-  change_setting ${SSH_CONFIG} SyslogFacility AUTHPRIV
-  grep "^SyslogFacility" ${SSH_CONFIG}
-
-  # LogLevel
-  change_setting ${SSH_CONFIG} LogLevel VERBOSE
-  grep "^LogLevel" ${SSH_CONFIG}
-
-  # TCP Port Forwarding
-  #change_setting ${SSH_CONFIG} AllowTcpForwarding no
-  #grep "^AllowTcpForwarding" ${SSH_CONFIG}
-
-  # AllowStreamLocalForwarding
-  #change_setting ${SSH_CONFIG} AllowStreamLocalForwarding no
-  #grep "^AllowStreamLocalForwarding" ${SSH_CONFIG}
-
-  # GatewayPorts
-  #change_setting ${SSH_CONFIG} GatewayPorts no
-  #grep "^GatewayPorts" ${SSH_CONFIG}
-
-  # PermitTunnel
-  #change_setting ${SSH_CONFIG} PermitTunnel no
-  #grep "^PermitTunnel" ${SSH_CONFIG}
+  change_setting "${SSH_CONFIG}" Port "${SSH_PORT_NUMBER}"
+  change_setting "${SSH_CONFIG}" PermitRootLogin no
+  change_setting "${SSH_CONFIG}" PasswordAuthentication no
+  change_setting "${SSH_CONFIG}" ChallengeResponseAuthentication no
+  change_setting "${SSH_CONFIG}" PermitEmptyPasswords no
+  change_setting "${SSH_CONFIG}" SyslogFacility AUTHPRIV
+  change_setting "${SSH_CONFIG}" LogLevel VERBOSE
 fi
 
-# User SSH Setup
-mkdir /home/ubuntu/.ssh
-curl ${GITHUB_KEYS_URL} > /home/ubuntu/.ssh/authorized_keys
-chown ubuntu:ubuntu /home/ubuntu/.ssh/authorized_keys
-chmod 600 /home/ubuntu/.ssh/authorized_keys
+# SSH key setup
+sudo mkdir -p /home/ubuntu/.ssh
+curl -fsSL "${GITHUB_KEYS_URL}" | sudo tee /home/ubuntu/.ssh/authorized_keys >/dev/null
+sudo chmod 700 /home/ubuntu/.ssh
+sudo chmod 600 /home/ubuntu/.ssh/authorized_keys
+sudo chown -R ubuntu:ubuntu /home/ubuntu/.ssh
+
 sudo systemctl restart sshd.service
 
-wget https://raw.githubusercontent.com/maemune/Unix/main/Generat_SSH.sh && nano ./Generat_SSH.sh && chmod u+x ./Generat_SSH.sh && ./Generat_SSH.sh
-wget https://raw.githubusercontent.com/maemune/Unix/main/Refresh_host.sh && nano ./Refresh_host.sh && chmod u+x ./Refresh_host.sh
-wget https://raw.githubusercontent.com/maemune/Unix/main/Update.sh && nano ./Update.sh && chmod u+x ./Update.sh
+# External scripts
+wget -q https://raw.githubusercontent.com/maemune/Unix/main/Generat_SSH.sh
+chmod u+x Generat_SSH.sh
+./Generat_SSH.sh
 
-crontab -l > {tmpfile}
-echo "*/5 * * * * curl ${GITHUB_KEYS_URL} > /home/ubuntu/.ssh/authorized_keys && chown ubuntu:ubuntu /home/ubuntu/.ssh/authorized_keys && chmod 600 /home/ubuntu/.ssh/authorized_keys
-0 3 */2 * * /home/ubuntu/Update.sh" >> {tmpfile}
-crontab {tmpfile}
-rm {tmpfile}
+wget -q https://raw.githubusercontent.com/maemune/Unix/main/Refresh_host.sh
+chmod u+x Refresh_host.sh
 
-# Storage FullExtend
+wget -q https://raw.githubusercontent.com/maemune/Unix/main/Update.sh
+chmod u+x Update.sh
+sudo chown ubuntu:ubuntu Update.sh
+sudo mv Update.sh /home/ubuntu/Update.sh
+
+# Cron
+TMPFILE="$(mktemp)"
+crontab -l 2>/dev/null > "${TMPFILE}"
+cat << EOF >> "${TMPFILE}"
+*/5 * * * * curl -fsSL ${GITHUB_KEYS_URL} > /home/ubuntu/.ssh/authorized_keys && chown ubuntu:ubuntu /home/ubuntu/.ssh/authorized_keys && chmod 600 /home/ubuntu/.ssh/authorized_keys
+0 3 */2 * * /home/ubuntu/Update.sh
+EOF
+crontab "${TMPFILE}"
+rm -f "${TMPFILE}"
+
+# Storage extend
 sudo lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
 sudo resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
 
-# Logout
-./Update.sh
+# Final update & reboot
+/home/ubuntu/Update.sh
 sudo reboot now
