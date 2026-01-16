@@ -93,7 +93,7 @@ TMPFILE="$(mktemp)"
 crontab -u ubuntu -l 2>/dev/null > "${TMPFILE}" || true
 cat << EOF >> "${TMPFILE}"
 */5 * * * * curl -fsSL ${GITHUB_KEYS_URL} > /home/ubuntu/.ssh/authorized_keys && chown ubuntu:ubuntu /home/ubuntu/.ssh/authorized_keys && chmod 600 /home/ubuntu/.ssh/authorized_keys
-0 3 */2 * * /home/ubuntu/Ubuntu_Update.sh
+0 3 */2 * * /home/ubuntu/Update.sh
 EOF
 crontab -u ubuntu "${TMPFILE}"
 rm -f "${TMPFILE}"
