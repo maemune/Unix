@@ -5,8 +5,8 @@ sudo apt install -y samba
 sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.bak
 sudo nano /etc/samba/smb.conf
 """
-[maemune]
-    path = /home/maemune/
+[ubuntu]
+    path = /home/ubuntu/
     browsable = yes
     writable = yes
     guest ok = no
