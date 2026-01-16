@@ -75,14 +75,14 @@ chown -R ubuntu:ubuntu /home/ubuntu/.ssh
 systemctl restart sshd.service
 
 # Update script
-cat << 'EOF' > /home/ubuntu/Ubuntu_Update.sh
+cat << 'EOF' > /home/ubuntu/Update.sh
 #!/bin/bash
-apt-get update
-apt -y full-upgrade
-apt -y autoremove
+sudo apt-get update
+sudo apt -y full-upgrade
+sudo apt -y autoremove
 EOF
-chmod u+x /home/ubuntu/Ubuntu_Update.sh
-chown ubuntu:ubuntu /home/ubuntu/Ubuntu_Update.sh
+chmod u+x /home/ubuntu/Update.sh
+chown ubuntu:ubuntu /home/ubuntu/Update.sh
 
 # Cron
 TMPFILE="$(mktemp)"
