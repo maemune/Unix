@@ -59,12 +59,12 @@ fi
 
 # User create
 if ! id ubuntu >/dev/null 2>&1; then
-  adduser --disabled-password --gecos "" ubuntu
+  useradd -m -s /bin/bash ubuntu
 fi
 usermod -aG sudo ubuntu
 
 if [ -n "${PASSWORD}" ]; then
-  echo -e "${PASSWORD}\n${PASSWORD}" | passwd ubuntu
+  echo "ubuntu:${PASSWORD}" | chpasswd
 else
   passwd ubuntu
 fi
