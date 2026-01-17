@@ -57,17 +57,10 @@ if [ ! -f "${SSH_CONFIG_BACKUP}" ]; then
   change_setting "${SSH_CONFIG}" LogLevel VERBOSE
 fi
 
-# User create
-if ! id ubuntu >/dev/null 2>&1; then
-  useradd -m -s /bin/bash ubuntu
-fi
+# UserCreate
+adduser -q --gecos "" --disabled-password ubuntu
 usermod -aG sudo ubuntu
-
-if [ -n "${PASSWORD}" ]; then
-  echo "ubuntu:${PASSWORD}" | chpasswd
-else
-  passwd ubuntu
-fi
+echo -e "${PASSWORD}\n${PASSWORD}\n" | passwd ubuntu
 
 # SSH key setup
 mkdir -p /home/ubuntu/.ssh
