@@ -25,8 +25,7 @@ tar -xzvf softether-vpnserver.tar.gz
 
 # Build
 cd vpnserver
-make i_read_and_agree_the_license_agreement
-
+make
 # Setup directory
 cd ..
 sudo mv vpnserver ${INSTALL_DIR}
