@@ -1,5 +1,5 @@
 #!/bin/bash
-#wget https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/Setup_SoftEther.sh && nano ./Setup_SoftEther.sh && chmod u+x ./Setup_SoftEther.sh && ./Setup_SoftEther.sh
+#wget https://raw.githubusercontent.com/maemune/Unix/main/Setup_SoftEther.sh && nano ./Setup_SoftEther.sh && chmod u+x ./Setup_SoftEther.sh && ./Setup_SoftEther.sh
 
 set -e
 
