@@ -91,9 +91,5 @@ EOF
 crontab -u ubuntu "${TMPFILE}"
 rm -f "${TMPFILE}"
 
-# LVM resize
-lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
-resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
-
 # Reboot
 reboot now
