@@ -9,7 +9,7 @@
 DB_ROOT_PASSWORD="bq#CLsCa&.e(Q*|RV6s2iuqZ"
 DB_USER="root"
 DB_PASSWORD="bq#CLsCa&.e(Q*|RV6s2iuqZ"
-DB_NAME="mariadb"
+DB_NAME="SeaDollar"
 # Define your local network range
 LOCAL_NETWORK="192.168.1.0/24"
 # SQL Host pattern
@@ -40,7 +40,7 @@ echo "y" | sudo ufw enable
 # --- MariaDB Security Configuration ---
 echo "Configuring MariaDB Security..."
 sudo mariadb <<EOF
-ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASSWORD}';
+ALTER USER 'root'@'192.168.1.%' IDENTIFIED BY '${DB_ROOT_PASSWORD}';
 DELETE FROM mysql.user WHERE User='';
 DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost','127.0.0.1','::1');
 DROP DATABASE IF EXISTS test;
