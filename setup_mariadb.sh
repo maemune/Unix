@@ -7,7 +7,7 @@
 
 # --- Configuration Variables ---
 DB_ROOT_PASSWORD="bq#CLsCa&.e(Q*|RV6s2iuqZ"
-DB_USER="ubuntu"
+DB_USER="root"
 DB_PASSWORD="bq#CLsCa&.e(Q*|RV6s2iuqZ"
 DB_NAME="mariadb"
 # Define your local network range
