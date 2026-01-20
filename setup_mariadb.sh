@@ -1,31 +1,44 @@
 #!/bin/bash
 
-#wget https://raw.githubusercontent.com/maemune/Unix/main/setup_mariadb.sh && nano ./setup_mariadb.sh && chmod u+x ./setup_mariadb.sh && ./setup_mariadb.sh
-
 # ==========================================================
-# MariaDB Setup Script (0.0.0.0 Access Enabled)
+# MariaDB Setup Script (UFW & Local Network Access)
 # ==========================================================
 
-# --- 設定変数 ---
+# --- Configuration Variables ---
 DB_ROOT_PASSWORD="bq#CLsCa&.e(Q*|RV6s2iuqZ"
 DB_USER="ubuntu"
 DB_PASSWORD="bq#CLsCa&.e(Q*|RV6s2iuqZ"
 DB_NAME="mariadb"
+# Define your local network range
+LOCAL_NETWORK="192.168.1.0/24"
+# SQL Host pattern
+SQL_HOST="192.168.1.%"
 
-# --- スクリプト開始 ---
+# --- Start Script ---
 set -e
 
 echo "Updating system packages..."
 sudo apt update && sudo apt upgrade -y
 
-echo "Installing MariaDB Server..."
-sudo apt install -y mariadb-server
+echo "Installing MariaDB Server and UFW..."
+sudo apt install -y mariadb-server ufw
 
 echo "Starting MariaDB..."
 sudo systemctl start mariadb
 sudo systemctl enable mariadb
 
-# --- MariaDB セキュリティ設定 ---
+# --- UFW Configuration ---
+echo "Configuring Firewall (UFW)..."
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+# Allow SSH to prevent lockout
+sudo ufw allow ssh
+# Allow MariaDB (3306) only from Local Network
+sudo ufw allow from ${LOCAL_NETWORK} to any port 3306
+# Enable UFW
+echo "y" | sudo ufw enable
+
+# --- MariaDB Security Configuration ---
 echo "Configuring MariaDB Security..."
 sudo mariadb <<EOF
 ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASSWORD}';
@@ -36,17 +49,17 @@ DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%%';
 FLUSH PRIVILEGES;
 EOF
 
-# --- データベースとユーザー作成（0.0.0.0許可） ---
+# --- Create Database and User ---
 echo "Creating Database and User..."
 sudo mariadb -u root -p"${DB_ROOT_PASSWORD}" <<EOF
 CREATE DATABASE IF NOT EXISTS ${DB_NAME};
-DROP USER IF EXISTS '${DB_USER}'@'%';
-CREATE USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
-GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%';
+DROP USER IF EXISTS '${DB_USER}'@'${SQL_HOST}';
+CREATE USER '${DB_USER}'@'${SQL_HOST}' IDENTIFIED BY '${DB_PASSWORD}';
+GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'${SQL_HOST}';
 FLUSH PRIVILEGES;
 EOF
 
-# --- MariaDB 設定 ---
+# --- MariaDB Configuration ---
 echo "Tuning MariaDB Configuration..."
 CONF_FILE="/etc/mysql/mariadb.conf.d/50-server.cnf"
 
@@ -54,9 +67,7 @@ sudo cp $CONF_FILE "${CONF_FILE}.bak"
 
 sudo tee $CONF_FILE <<EOF
 [mysqld]
-user                    = mariadb
-
-# --- Network ---
+user                    = mysql
 bind-address            = 0.0.0.0
 
 # --- Basic ---
@@ -66,7 +77,7 @@ thread_stack            = 256K
 thread_cache_size       = 8
 
 # --- InnoDB ---
-innodb_buffer_pool_size         = 8G
+innodb_buffer_pool_size         = 6G
 innodb_log_file_size            = 512M
 innodb_log_buffer_size          = 16M
 innodb_flush_log_at_trx_commit  = 1
@@ -83,18 +94,22 @@ read_buffer_size        = 256K
 read_rnd_buffer_size   = 512K
 
 # --- Logs ---
-log_error               = /var/log/mariadb/error.log
+log_error               = /var/log/mysql/error.log
 slow_query_log          = 1
-slow_query_log_file     = /var/log/mariadb/mariadb-slow.log
+slow_query_log_file     = /var/log/mysql/mariadb-slow.log
 long_query_time         = 2
 EOF
 
-# --- MariaDB 再起動 ---
+sudo mkdir -p /var/log/mysql
+sudo chown mysql:adm /var/log/mysql
+
+# --- Restart MariaDB ---
 echo "Restarting MariaDB Service..."
 sudo systemctl restart mariadb
 
 echo "----------------------------------------------------------"
-echo "MariaDB Setup Complete"
-echo "Bind Address : 0.0.0.0"
-echo "User Access  : ${DB_USER}@%"
+echo "MariaDB Setup Complete with UFW"
+echo "Firewall status: Active"
+echo "Allowed Network: ${LOCAL_NETWORK}"
+echo "User Access    : ${DB_USER}@${SQL_HOST}"
 echo "----------------------------------------------------------"
