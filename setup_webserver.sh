@@ -49,9 +49,6 @@ sudo a2enmod ssl rewrite auth_basic authn_file
 # --- 2. ファイアウォール (UFW) の設定と有効化 ---
 log "ファイアウォール (UFW) の設定を開始します..."
 
-# SSHポート (22番) を許可 (Raspberry Piへのアクセス維持のため必須)
-sudo ufw allow Openssl
-
 # Apache Full (HTTP 80番と HTTPS 443番) を許可
 # Certbotが認証を通るため、80番の開放は必須です
 sudo ufw allow 'Apache Full'
