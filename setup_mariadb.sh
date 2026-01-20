@@ -32,8 +32,6 @@ sudo systemctl enable mariadb
 echo "Configuring Firewall (UFW)..."
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
-# Allow SSH to prevent lockout
-sudo ufw allow ssh
 # Allow MariaDB (3306) only from Local Network
 sudo ufw allow from ${LOCAL_NETWORK} to any port 3306
 # Enable UFW
