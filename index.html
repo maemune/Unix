@@ -59,14 +59,22 @@
                 <h1 class="text-lg font-bold tracking-wide">Nexus<span class="text-indigo-400">Dash</span></h1>
             </div>
             <nav id="sidebar-nav" class="flex-1 overflow-y-auto py-4 px-2 space-y-0.5 text-sm">
+                <!-- Quick Access Section -->
                 <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Quick Access</p>
                 <div id="shortcuts-container"></div>
-                <div class="pt-4 mt-2 border-t border-slate-800">
+                <div class="pt-2 mb-4">
                      <button id="add-shortcut-btn" class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-indigo-400 transition-colors w-full text-left group">
                         <i class="fa-solid fa-plus w-4 text-center"></i>
-                        <span class="text-xs">Add Shortcut</span>
+                        <span class="text-xs text-slate-400">Add Shortcut</span>
                     </button>
                 </div>
+
+                <!-- Tools Section -->
+                <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Tools</p>
+                <button id="open-pwd-gen" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded transition-colors w-full text-left">
+                    <i class="fa-solid fa-key w-4 text-center"></i>
+                    <span>Password Gen</span>
+                </button>
             </nav>
             <div class="p-3 border-t border-slate-800">
                 <button onclick="location.reload()" class="w-full flex items-center gap-3 px-2 py-1.5 text-slate-400 hover:text-red-400 transition-colors text-sm rounded hover:bg-slate-800/50">
@@ -202,6 +210,49 @@
         </div>
     </div>
 
+    <!-- Password Generator Modal -->
+    <div id="pwd-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div class="bg-white rounded-lg p-6 w-96 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-slate-800">Password Generator</h3>
+                <button onclick="closePwdModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="p-3 bg-slate-100 rounded-lg flex items-center justify-between group">
+                    <span id="pwd-result" class="font-mono text-indigo-600 break-all pr-2">********</span>
+                    <button id="copy-pwd" class="text-slate-400 hover:text-indigo-600 transition-colors">
+                        <i class="fa-solid fa-copy"></i>
+                    </button>
+                </div>
+
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <label class="text-xs font-bold text-slate-500">Length: <span id="len-val">16</span></label>
+                    </div>
+                    <input type="range" id="pwd-len" min="8" max="64" value="16" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded hover:bg-slate-50">
+                        <input type="checkbox" id="pwd-upper" checked class="accent-indigo-600"> A-Z
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded hover:bg-slate-50">
+                        <input type="checkbox" id="pwd-lower" checked class="accent-indigo-600"> a-z
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded hover:bg-slate-50">
+                        <input type="checkbox" id="pwd-num" checked class="accent-indigo-600"> 0-9
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded hover:bg-slate-50">
+                        <input type="checkbox" id="pwd-sym" checked class="accent-indigo-600"> !@#$%
+                    </label>
+                </div>
+
+                <button id="gen-pwd-btn" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-bold hover:bg-indigo-700 transition-colors">Generate</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE = "http://localhost:3000/api";
         const USER_ID = 1;
@@ -218,6 +269,7 @@
         ];
         let useMock = false;
 
+        // Elements
         const loginView = document.getElementById('login-view');
         const loginForm = document.getElementById('login-form');
         const dashboardView = document.getElementById('dashboard-view');
@@ -228,6 +280,10 @@
         const connStatus = document.getElementById('connection-status');
         const errorBanner = document.getElementById('api-error-banner');
         const authUserName = document.getElementById('auth-user');
+
+        // Modals
+        const shortcutModal = document.getElementById('shortcut-modal');
+        const pwdModal = document.getElementById('pwd-modal');
 
         loginForm.onsubmit = async (e) => {
             e.preventDefault();
@@ -268,6 +324,7 @@
             }
         }
 
+        // ToDo
         async function fetchTodos() {
             if (useMock) return renderTodos(mockTodos);
             try {
@@ -275,15 +332,6 @@
                 const data = await res.json();
                 renderTodos(data);
             } catch (e) { useMock = true; renderTodos(mockTodos); }
-        }
-
-        async function fetchShortcuts() {
-            if (useMock) return renderShortcuts(mockShortcuts);
-            try {
-                const res = await fetch(`${API_BASE}/shortcuts?userId=${USER_ID}`);
-                const data = await res.json();
-                renderShortcuts(data);
-            } catch (e) { useMock = true; renderShortcuts(mockShortcuts); }
         }
 
         todoForm.onsubmit = async (e) => {
@@ -331,6 +379,16 @@
             }
         }
 
+        // Shortcuts
+        async function fetchShortcuts() {
+            if (useMock) return renderShortcuts(mockShortcuts);
+            try {
+                const res = await fetch(`${API_BASE}/shortcuts?userId=${USER_ID}`);
+                const data = await res.json();
+                renderShortcuts(data);
+            } catch (e) { useMock = true; renderShortcuts(mockShortcuts); }
+        }
+
         async function deleteShortcut(id) {
             if (useMock) {
                 mockShortcuts = mockShortcuts.filter(s => s.id !== id);
@@ -341,6 +399,7 @@
             }
         }
 
+        // Render Helpers
         function renderTodos(todos) {
             todoContainer.innerHTML = todos.map(t => `
                 <div class="flex items-center justify-between p-2 hover:bg-slate-50 rounded group border border-transparent hover:border-slate-100 transition-all">
@@ -375,9 +434,12 @@
             }).join('');
         }
 
-        const modal = document.getElementById('shortcut-modal');
-        document.getElementById('add-shortcut-btn').onclick = () => modal.classList.replace('hidden', 'flex');
-        function closeModal() { modal.classList.replace('flex', 'hidden'); }
+        // Modal Controllers
+        document.getElementById('add-shortcut-btn').onclick = () => shortcutModal.classList.replace('hidden', 'flex');
+        function closeModal() { shortcutModal.classList.replace('flex', 'hidden'); }
+
+        document.getElementById('open-pwd-gen').onclick = () => pwdModal.classList.replace('hidden', 'flex');
+        function closePwdModal() { pwdModal.classList.replace('flex', 'hidden'); }
 
         document.getElementById('save-shortcut').onclick = async () => {
             const name = document.getElementById('short-name').value;
@@ -398,6 +460,48 @@
                 closeModal();
                 fetchShortcuts();
             }
+        };
+
+        // Password Generator Logic
+        const pwdLen = document.getElementById('pwd-len');
+        const lenVal = document.getElementById('len-val');
+        pwdLen.oninput = () => lenVal.textContent = pwdLen.value;
+
+        document.getElementById('gen-pwd-btn').onclick = () => {
+            const chars = {
+                upper: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                lower: "abcdefghijklmnopqrstuvwxyz",
+                num: "0123456789",
+                sym: "!@#$%^&*()_+-=[]{}|;:,.<>?"
+            };
+            let pool = "";
+            if (document.getElementById('pwd-upper').checked) pool += chars.upper;
+            if (document.getElementById('pwd-lower').checked) pool += chars.lower;
+            if (document.getElementById('pwd-num').checked) pool += chars.num;
+            if (document.getElementById('pwd-sym').checked) pool += chars.sym;
+
+            if (!pool) return;
+            let result = "";
+            for (let i = 0; i < pwdLen.value; i++) {
+                result += pool.charAt(Math.floor(Math.random() * pool.length));
+            }
+            document.getElementById('pwd-result').textContent = result;
+        };
+
+        document.getElementById('copy-pwd').onclick = () => {
+            const text = document.getElementById('pwd-result').textContent;
+            if (text === "********") return;
+            
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            const icon = document.getElementById('copy-pwd').querySelector('i');
+            icon.className = "fa-solid fa-check text-green-500";
+            setTimeout(() => icon.className = "fa-solid fa-copy", 1500);
         };
 
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('ja-JP', {
