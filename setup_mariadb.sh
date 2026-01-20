@@ -1,4 +1,5 @@
 #!/bin/bash
+#wget https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/setup_mariadb.sh && nano ./setup_mariadb.sh && chmod u+x ./setup_mariadb.sh && ./setup_mariadb.sh
 
 # ==========================================================
 # MariaDB Setup Script (UFW & Local Network Access)
