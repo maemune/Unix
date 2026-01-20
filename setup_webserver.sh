@@ -3,7 +3,7 @@
 
 # --- ユーザー定義変数 ---
 DOMAIN="goggle.mydns.jp"
-EMAIL="maemune1999@gmail.com" # Certbot用の連絡先メールアドレス
+EMAIL="maemune0515@gmail.com" # Certbot用の連絡先メールアドレス
 USERNAME="maemune"
 GITHUB_INDEX_URL="https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/index.html"
 # PASSWORD 変数は以下で動的に設定されます
@@ -50,7 +50,7 @@ sudo a2enmod ssl rewrite auth_basic authn_file
 log "ファイアウォール (UFW) の設定を開始します..."
 
 # SSHポート (22番) を許可 (Raspberry Piへのアクセス維持のため必須)
-sudo ufw allow 22/tcp
+sudo ufw allow Openssl
 
 # Apache Full (HTTP 80番と HTTPS 443番) を許可
 # Certbotが認証を通るため、80番の開放は必須です
