@@ -6,9 +6,9 @@
 # ==========================================================
 
 # --- Configuration Variables ---
-DB_ROOT_PASSWORD="bq#CLsCa&.e(Q*|RV6s2iuqZ"
+DB_ROOT_PASSWORD=""
 DB_USER="root"
-DB_PASSWORD="bq#CLsCa&.e(Q*|RV6s2iuqZ"
+DB_PASSWORD=""
 DB_NAME="SeaDollar"
 # Define your local network range
 LOCAL_NETWORK="192.168.1.0/24"
