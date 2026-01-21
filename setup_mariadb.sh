@@ -1,5 +1,4 @@
 #!/bin/bash
-#wget https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/setup_mariadb.sh && nano ./setup_mariadb.sh && chmod u+x ./setup_mariadb.sh && ./setup_mariadb.sh
 
 # ==========================================================
 # MariaDB Setup Script (UFW & Local Network Access)
@@ -9,10 +8,10 @@
 DB_ROOT_PASSWORD=""
 DB_USER="root"
 DB_PASSWORD=""
-DB_NAME="SeaDollar"
-# Define your local network range
+DB_NAME="seadollar"
+# Local network range based on 192.168.1.4
 LOCAL_NETWORK="192.168.1.0/24"
-# SQL Host pattern
+# SQL Host pattern for 192.168.1.x
 SQL_HOST="192.168.1.%"
 
 # --- Start Script ---
@@ -32,7 +31,9 @@ sudo systemctl enable mariadb
 echo "Configuring Firewall (UFW)..."
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
-# Allow MariaDB (3306) only from Local Network
+# Allow SSH to prevent lockout
+sudo ufw allow ssh
+# Allow MariaDB (3306) only from your Local Network
 sudo ufw allow from ${LOCAL_NETWORK} to any port 3306
 # Enable UFW
 echo "y" | sudo ufw enable
@@ -40,7 +41,7 @@ echo "y" | sudo ufw enable
 # --- MariaDB Security Configuration ---
 echo "Configuring MariaDB Security..."
 sudo mariadb <<EOF
-ALTER USER 'root'@'192.168.1.%' IDENTIFIED BY '${DB_ROOT_PASSWORD}';
+ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASSWORD}';
 DELETE FROM mysql.user WHERE User='';
 DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost','127.0.0.1','::1');
 DROP DATABASE IF EXISTS test;
@@ -66,7 +67,7 @@ sudo cp $CONF_FILE "${CONF_FILE}.bak"
 
 sudo tee $CONF_FILE <<EOF
 [mysqld]
-user                    = mysql
+user                    = root
 bind-address            = 0.0.0.0
 
 # --- Basic ---
@@ -76,7 +77,7 @@ thread_stack            = 256K
 thread_cache_size       = 8
 
 # --- InnoDB ---
-innodb_buffer_pool_size         = 6G
+innodb_buffer_pool_size         = 8G
 innodb_log_file_size            = 512M
 innodb_log_buffer_size          = 16M
 innodb_flush_log_at_trx_commit  = 1
@@ -108,7 +109,6 @@ sudo systemctl restart mariadb
 
 echo "----------------------------------------------------------"
 echo "MariaDB Setup Complete with UFW"
-echo "Firewall status: Active"
-echo "Allowed Network: ${LOCAL_NETWORK}"
-echo "User Access    : ${DB_USER}@${SQL_HOST}"
+echo "Firewall status: Active (Allowed: ${LOCAL_NETWORK})"
+echo "MariaDB User   : ${DB_USER}@${SQL_HOST}"
 echo "----------------------------------------------------------"
