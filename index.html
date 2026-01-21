@@ -3,510 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexusDash | MariaDB Integration</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <title>500 - サーバーエラー</title>
     <style>
-        body { font-family: 'Noto Sans JP', sans-serif; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .glass-login { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); }
-        .scroll-area { overflow-y: auto; scrollbar-width: thin; }
-        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .error-code {
+            font-size: 120px;
+            font-weight: bold;
+            color: #667eea;
+            line-height: 1;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .error-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .error-message {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            background: #f8f9fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon svg {
+            width: 40px;
+            height: 40px;
+            stroke: #667eea;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        @media (max-width: 600px) {
+            .error-code {
+                font-size: 80px;
+            }
+            
+            .error-title {
+                font-size: 22px;
+            }
+            
+            .container {
+                padding: 40px 30px;
+            }
+        }
     </style>
 </head>
-<body class="text-slate-800 antialiased bg-slate-900 h-screen overflow-hidden">
-
-    <!-- Login View -->
-    <div id="login-view" class="fixed inset-0 z-50 flex items-center justify-center bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')] bg-cover bg-center">
-        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"></div>
-        <div class="relative w-full max-w-md p-8 glass-login rounded-2xl shadow-2xl mx-4 fade-in">
-            <div class="text-center mb-8">
-                <div class="w-12 h-12 bg-indigo-500 rounded-lg flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/30">
-                    <i class="fa-solid fa-cube text-white text-xl"></i>
-                </div>
-                <h1 class="text-3xl font-bold text-white tracking-wide mb-2">Nexus<span class="text-indigo-400">Dash</span></h1>
-                <p class="text-slate-400 text-sm">Welcome back to your workspace</p>
-            </div>
-            <form id="login-form" class="space-y-6">
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">User ID</label>
-                    <input type="text" id="username" class="w-full bg-slate-800/50 border border-slate-700 text-white text-sm rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Admin" value="Admin">
-                </div>
-                <button type="submit" id="login-button" class="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 font-bold rounded-lg text-sm px-5 py-3 text-center transition-all shadow-lg shadow-indigo-600/30 transform hover:-translate-y-0.5">
-                    Login
-                </button>
-                <p class="text-center text-[10px] text-slate-500">API Target: localhost:3000</p>
-            </form>
+<body>
+    <div class="container">
+        <div class="icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+        </div>
+        
+        <div class="error-code">500</div>
+        <h1 class="error-title">Internal Server Error</h1>
+        <p class="error-message">
+            申し訳ございません。サーバー内部でエラーが発生しました。<br>
+            しばらく時間をおいてから再度お試しください。
+        </p>
+        
+        <div>
+            <a href="/" class="btn">ホームに戻る</a>
+            <a href="javascript:location.reload()" class="btn btn-secondary">再読み込み</a>
         </div>
     </div>
-
-    <!-- Dashboard View -->
-    <div id="dashboard-view" class="hidden h-screen flex overflow-hidden bg-slate-100 w-full fade-in">
-        <!-- Sidebar -->
-        <aside class="w-56 bg-slate-900 text-white flex flex-col hidden md:flex shadow-xl z-20 flex-shrink-0">
-            <div class="h-14 px-4 flex items-center gap-3 border-b border-slate-800">
-                <div class="w-7 h-7 bg-indigo-500 rounded flex items-center justify-center">
-                    <i class="fa-solid fa-cube text-white text-sm"></i>
-                </div>
-                <h1 class="text-lg font-bold tracking-wide">Nexus<span class="text-indigo-400">Dash</span></h1>
-            </div>
-            <nav id="sidebar-nav" class="flex-1 overflow-y-auto py-4 px-2 space-y-0.5 text-sm">
-                <!-- Quick Access Section -->
-                <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Quick Access</p>
-                <div id="shortcuts-container"></div>
-                <div class="pt-2 mb-4">
-                     <button id="add-shortcut-btn" class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-indigo-400 transition-colors w-full text-left group">
-                        <i class="fa-solid fa-plus w-4 text-center"></i>
-                        <span class="text-xs text-slate-400">Add Shortcut</span>
-                    </button>
-                </div>
-
-                <!-- Tools Section -->
-                <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Tools</p>
-                <button id="open-pwd-gen" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded transition-colors w-full text-left">
-                    <i class="fa-solid fa-key w-4 text-center"></i>
-                    <span>Password Gen</span>
-                </button>
-            </nav>
-            <div class="p-3 border-t border-slate-800">
-                <button onclick="location.reload()" class="w-full flex items-center gap-3 px-2 py-1.5 text-slate-400 hover:text-red-400 transition-colors text-sm rounded hover:bg-slate-800/50">
-                    <i class="fa-solid fa-right-from-bracket w-4 text-center"></i>
-                    <span>Logout</span>
-                </button>
-            </div>
-        </aside>
-
-        <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
-            <!-- Header -->
-            <header class="h-14 glass-panel border-b border-slate-200 flex items-center justify-between px-4 z-10 flex-shrink-0">
-                <div class="flex items-center gap-3">
-                    <div class="text-xs text-slate-500 font-medium" id="current-date"></div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <span id="connection-status" class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-700">Connecting...</span>
-                    <div class="flex items-center gap-2 px-2 py-1 bg-slate-50 rounded-full border border-slate-200">
-                        <div class="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-xs font-bold">
-                            <i class="fa-solid fa-user"></i>
-                        </div>
-                        <span id="auth-user" class="text-xs font-bold text-slate-700 pr-1">User</span>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Main Content -->
-            <div class="flex-1 flex flex-col p-4 gap-4 overflow-hidden">
-                <div id="api-error-banner" class="hidden bg-amber-50 border border-amber-200 p-3 rounded-lg flex items-center gap-3 text-amber-700 text-[10px]">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                    <span>Offline: API Server (localhost:3000) not found. Using local memory.</span>
-                </div>
-
-                <!-- Top Stats -->
-                <div class="grid grid-cols-3 gap-4 h-24 flex-shrink-0">
-                    <div class="bg-white px-5 py-3 rounded-lg shadow-sm border border-slate-200 flex flex-col justify-center relative overflow-hidden group">
-                        <div class="absolute right-0 top-0 w-16 h-16 bg-blue-50 rounded-bl-full -mr-3 -mt-3 transition-transform group-hover:scale-110"></div>
-                        <div class="relative z-10">
-                            <p class="text-xs font-medium text-slate-500">Unread Messages</p>
-                            <div class="flex items-baseline gap-2">
-                                <h3 class="text-2xl font-bold text-slate-800">12</h3>
-                                <span class="text-[10px] text-green-600 font-medium bg-green-50 px-1.5 py-0.5 rounded">+2 (Today)</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white px-5 py-3 rounded-lg shadow-sm border border-slate-200 flex flex-col justify-center relative overflow-hidden group">
-                        <div class="absolute right-0 top-0 w-16 h-16 bg-indigo-50 rounded-bl-full -mr-3 -mt-3 transition-transform group-hover:scale-110"></div>
-                        <div class="relative z-10">
-                            <p class="text-xs font-medium text-slate-500">Active Tasks</p>
-                            <div class="flex items-baseline gap-2">
-                                <h3 class="text-2xl font-bold text-slate-800">5</h3>
-                                <span class="text-[10px] text-indigo-600 font-medium bg-indigo-50 px-1.5 py-0.5 rounded">Due: 2</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white px-5 py-3 rounded-lg shadow-sm border border-slate-200 flex flex-col justify-center relative overflow-hidden group">
-                        <div class="absolute right-0 top-0 w-16 h-16 bg-orange-50 rounded-bl-full -mr-3 -mt-3 transition-transform group-hover:scale-110"></div>
-                        <div class="relative z-10">
-                            <p class="text-xs font-medium text-slate-500">Uptime</p>
-                            <div class="flex items-baseline gap-2">
-                                <h3 class="text-2xl font-bold text-slate-800">99.9%</h3>
-                                <span class="text-[10px] text-slate-500 font-medium bg-slate-100 px-1.5 py-0.5 rounded">Normal</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-0">
-                    <!-- Activity Feed -->
-                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col min-h-0">
-                        <div class="px-4 py-2 border-b border-slate-100 bg-slate-50/50 flex-shrink-0 flex justify-between items-center">
-                            <h3 class="text-sm font-bold text-slate-700">Updates</h3>
-                            <button class="text-xs text-indigo-500 hover:text-indigo-700">View All</button>
-                        </div>
-                        <div class="flex-1 overflow-y-auto scroll-area divide-y divide-slate-50">
-                            <div class="p-3 hover:bg-slate-50 flex gap-3">
-                                <div class="w-8 h-8 rounded bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 text-xs"><i class="fa-solid fa-file-pen"></i></div>
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex justify-between items-start"><p class="text-xs font-bold text-slate-800">UI Kit Update</p><span class="text-[10px] text-slate-400">2h ago</span></div>
-                                    <p class="text-[10px] text-slate-500">v2.0 was uploaded</p>
-                                </div>
-                            </div>
-                            <div class="p-3 hover:bg-slate-50 flex gap-3">
-                                <div class="w-8 h-8 rounded bg-purple-100 text-purple-600 flex items-center justify-center flex-shrink-0 text-xs"><i class="fa-solid fa-code-branch"></i></div>
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex justify-between items-start"><p class="text-xs font-bold text-slate-800">Merge Completed</p><span class="text-[10px] text-slate-400">5h ago</span></div>
-                                    <p class="text-[10px] text-slate-500">fix: #402 bug fixes</p>
-                                </div>
-                            </div>
-                            <div class="p-3 hover:bg-slate-50 flex gap-3">
-                                <div class="w-8 h-8 rounded bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 text-xs"><i class="fa-solid fa-users"></i></div>
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex justify-between items-start"><p class="text-xs font-bold text-slate-800">New Member</p><span class="text-[10px] text-slate-400">Yesterday</span></div>
-                                    <p class="text-[10px] text-slate-500">Tanaka joined the team</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ToDo Section -->
-                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col min-h-0">
-                        <div class="px-4 py-2 border-b border-indigo-600 bg-indigo-600 text-white flex-shrink-0 flex justify-between items-center">
-                            <h3 class="text-sm font-bold text-white">ToDo List</h3>
-                            <span id="todo-count" class="text-[10px] bg-indigo-500 px-1.5 rounded text-white">0</span>
-                        </div>
-                        <div id="todo-container" class="flex-1 overflow-y-auto scroll-area p-2 space-y-1"></div>
-                        <form id="todo-form" class="p-2 border-t border-slate-100 bg-slate-50 flex-shrink-0">
-                            <div class="flex gap-2">
-                                <input type="text" id="todo-input" placeholder="Add task..." class="flex-1 bg-white border border-slate-200 rounded px-2 py-1 text-xs focus:outline-none focus:border-indigo-500" required>
-                                <button type="submit" class="bg-indigo-600 text-white rounded w-6 h-6 flex items-center justify-center hover:bg-indigo-700">
-                                    <i class="fa-solid fa-plus text-xs"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Shortcut Modal -->
-    <div id="shortcut-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
-        <div class="bg-white rounded-lg p-6 w-80 shadow-2xl">
-            <h3 class="text-lg font-bold mb-4 text-slate-800">Add Shortcut</h3>
-            <div class="space-y-4">
-                <input type="text" id="short-name" placeholder="Name" class="w-full border border-slate-300 p-2 rounded text-sm outline-none">
-                <input type="url" id="short-url" placeholder="URL" class="w-full border border-slate-300 p-2 rounded text-sm outline-none">
-            </div>
-            <div class="flex justify-end gap-2 mt-6">
-                <button onclick="closeModal()" class="px-3 py-2 text-sm text-slate-500">Cancel</button>
-                <button id="save-shortcut" class="px-3 py-2 text-sm bg-indigo-600 text-white rounded">Save to DB</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Password Generator Modal -->
-    <div id="pwd-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
-        <div class="bg-white rounded-lg p-6 w-96 shadow-2xl">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-bold text-slate-800">Password Generator</h3>
-                <button onclick="closePwdModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            
-            <div class="space-y-4">
-                <div class="p-3 bg-slate-100 rounded-lg flex items-center justify-between group">
-                    <span id="pwd-result" class="font-mono text-indigo-600 break-all pr-2">********</span>
-                    <button id="copy-pwd" class="text-slate-400 hover:text-indigo-600 transition-colors">
-                        <i class="fa-solid fa-copy"></i>
-                    </button>
-                </div>
-
-                <div>
-                    <div class="flex justify-between mb-1">
-                        <label class="text-xs font-bold text-slate-500">Length: <span id="len-val">16</span></label>
-                    </div>
-                    <input type="range" id="pwd-len" min="8" max="64" value="16" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 text-xs">
-                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded hover:bg-slate-50">
-                        <input type="checkbox" id="pwd-upper" checked class="accent-indigo-600"> A-Z
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded hover:bg-slate-50">
-                        <input type="checkbox" id="pwd-lower" checked class="accent-indigo-600"> a-z
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded hover:bg-slate-50">
-                        <input type="checkbox" id="pwd-num" checked class="accent-indigo-600"> 0-9
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer p-2 border rounded hover:bg-slate-50">
-                        <input type="checkbox" id="pwd-sym" checked class="accent-indigo-600"> !@#$%
-                    </label>
-                </div>
-
-                <button id="gen-pwd-btn" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-bold hover:bg-indigo-700 transition-colors">Generate</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const API_BASE = "http://localhost:3000/api";
-        const USER_ID = 1;
-
-        let mockTodos = [
-            { id: 101, text: "Weekly Meeting", completed: false },
-            { id: 102, text: "Send Invoice", completed: true }
-        ];
-        let mockShortcuts = [
-            { id: 201, name: "Google", url: "https://google.com" },
-            { id: 202, name: "YouTube", url: "https://youtube.com" },
-            { id: 203, name: "GitHub", url: "https://github.com" },
-            { id: 204, name: "ChatGPT", url: "https://chatgpt.com" }
-        ];
-        let useMock = false;
-
-        // Elements
-        const loginView = document.getElementById('login-view');
-        const loginForm = document.getElementById('login-form');
-        const dashboardView = document.getElementById('dashboard-view');
-        const todoContainer = document.getElementById('todo-container');
-        const shortcutsContainer = document.getElementById('shortcuts-container');
-        const todoForm = document.getElementById('todo-form');
-        const todoInput = document.getElementById('todo-input');
-        const connStatus = document.getElementById('connection-status');
-        const errorBanner = document.getElementById('api-error-banner');
-        const authUserName = document.getElementById('auth-user');
-
-        // Modals
-        const shortcutModal = document.getElementById('shortcut-modal');
-        const pwdModal = document.getElementById('pwd-modal');
-
-        loginForm.onsubmit = async (e) => {
-            e.preventDefault();
-            const loginBtn = document.getElementById('login-button');
-            const username = document.getElementById('username').value;
-            authUserName.textContent = username || 'Admin';
-            
-            loginBtn.textContent = "Checking connection...";
-            loginBtn.disabled = true;
-            
-            try {
-                const res = await fetch(`${API_BASE}/todos?userId=${USER_ID}`, { method: 'GET', mode: 'cors' });
-                useMock = !res.ok;
-            } catch (e) {
-                useMock = true;
-            }
-
-            loginView.classList.add('hidden');
-            dashboardView.classList.remove('hidden');
-            document.body.classList.replace('bg-slate-900', 'bg-slate-100');
-            refreshAll();
-        };
-
-        async function refreshAll() {
-            await Promise.all([fetchTodos(), fetchShortcuts()]);
-            updateStatusUI();
-        }
-
-        function updateStatusUI() {
-            if (useMock) {
-                connStatus.textContent = "Local Mock Mode";
-                connStatus.className = "px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-700";
-                errorBanner.classList.remove('hidden');
-            } else {
-                connStatus.textContent = "MariaDB Connected";
-                connStatus.className = "px-2 py-0.5 rounded-full text-[10px] bg-green-100 text-green-700";
-                errorBanner.classList.add('hidden');
-            }
-        }
-
-        // ToDo
-        async function fetchTodos() {
-            if (useMock) return renderTodos(mockTodos);
-            try {
-                const res = await fetch(`${API_BASE}/todos?userId=${USER_ID}`);
-                const data = await res.json();
-                renderTodos(data);
-            } catch (e) { useMock = true; renderTodos(mockTodos); }
-        }
-
-        todoForm.onsubmit = async (e) => {
-            e.preventDefault();
-            const text = todoInput.value;
-            if (useMock) {
-                mockTodos.push({ id: Date.now(), text, completed: false });
-                todoInput.value = '';
-                renderTodos(mockTodos);
-            } else {
-                try {
-                    await fetch(`${API_BASE}/todos`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ userId: USER_ID, text: text })
-                    });
-                    todoInput.value = '';
-                    fetchTodos();
-                } catch (e) { console.error(e); }
-            }
-        };
-
-        async function toggleTodo(id, status) {
-            if (useMock) {
-                const item = mockTodos.find(t => t.id === id);
-                if (item) item.completed = status;
-                renderTodos(mockTodos);
-            } else {
-                await fetch(`${API_BASE}/todos/${id}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ completed: status })
-                });
-                fetchTodos();
-            }
-        }
-
-        async function deleteTodo(id) {
-            if (useMock) {
-                mockTodos = mockTodos.filter(t => t.id !== id);
-                renderTodos(mockTodos);
-            } else {
-                await fetch(`${API_BASE}/todos/${id}`, { method: 'DELETE' });
-                fetchTodos();
-            }
-        }
-
-        // Shortcuts
-        async function fetchShortcuts() {
-            if (useMock) return renderShortcuts(mockShortcuts);
-            try {
-                const res = await fetch(`${API_BASE}/shortcuts?userId=${USER_ID}`);
-                const data = await res.json();
-                renderShortcuts(data);
-            } catch (e) { useMock = true; renderShortcuts(mockShortcuts); }
-        }
-
-        async function deleteShortcut(id) {
-            if (useMock) {
-                mockShortcuts = mockShortcuts.filter(s => s.id !== id);
-                renderShortcuts(mockShortcuts);
-            } else {
-                await fetch(`${API_BASE}/shortcuts/${id}`, { method: 'DELETE' });
-                fetchShortcuts();
-            }
-        }
-
-        // Render Helpers
-        function renderTodos(todos) {
-            todoContainer.innerHTML = todos.map(t => `
-                <div class="flex items-center justify-between p-2 hover:bg-slate-50 rounded group border border-transparent hover:border-slate-100 transition-all">
-                    <div class="flex items-center gap-2 flex-1 min-w-0">
-                        <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTodo(${t.id}, ${!t.completed})" class="w-3.5 h-3.5 text-indigo-600 rounded">
-                        <span class="text-[11px] ${t.completed ? 'line-through text-slate-400' : 'text-slate-700'} truncate">${t.text}</span>
-                    </div>
-                    <button onclick="deleteTodo(${t.id})" class="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <i class="fa-solid fa-trash-can text-[10px]"></i>
-                    </button>
-                </div>
-            `).join('');
-            document.getElementById('todo-count').textContent = todos.length;
-        }
-
-        function renderShortcuts(list) {
-            shortcutsContainer.innerHTML = list.map(s => {
-                let domain = "google.com";
-                try { domain = new URL(s.url).hostname; } catch(e) {}
-                const icon = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
-                return `
-                    <div class="flex items-center justify-between px-3 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded group transition-colors">
-                        <a href="${s.url}" target="_blank" class="flex items-center gap-3 overflow-hidden">
-                            <img src="${icon}" class="w-4 h-4 rounded-sm">
-                            <span class="truncate">${s.name}</span>
-                        </a>
-                        <button onclick="deleteShortcut(${s.id})" class="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-red-400">
-                            <i class="fa-solid fa-xmark text-[10px]"></i>
-                        </button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Modal Controllers
-        document.getElementById('add-shortcut-btn').onclick = () => shortcutModal.classList.replace('hidden', 'flex');
-        function closeModal() { shortcutModal.classList.replace('flex', 'hidden'); }
-
-        document.getElementById('open-pwd-gen').onclick = () => pwdModal.classList.replace('hidden', 'flex');
-        function closePwdModal() { pwdModal.classList.replace('flex', 'hidden'); }
-
-        document.getElementById('save-shortcut').onclick = async () => {
-            const name = document.getElementById('short-name').value;
-            let url = document.getElementById('short-url').value;
-            if(!name || !url) return;
-            if(!url.startsWith('http')) url = 'https://' + url;
-
-            if (useMock) {
-                mockShortcuts.push({ id: Date.now(), name, url });
-                renderShortcuts(mockShortcuts);
-                closeModal();
-            } else {
-                await fetch(`${API_BASE}/shortcuts`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: USER_ID, name, url })
-                });
-                closeModal();
-                fetchShortcuts();
-            }
-        };
-
-        // Password Generator Logic
-        const pwdLen = document.getElementById('pwd-len');
-        const lenVal = document.getElementById('len-val');
-        pwdLen.oninput = () => lenVal.textContent = pwdLen.value;
-
-        document.getElementById('gen-pwd-btn').onclick = () => {
-            const chars = {
-                upper: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                lower: "abcdefghijklmnopqrstuvwxyz",
-                num: "0123456789",
-                sym: "!@#$%^&*()_+-=[]{}|;:,.<>?"
-            };
-            let pool = "";
-            if (document.getElementById('pwd-upper').checked) pool += chars.upper;
-            if (document.getElementById('pwd-lower').checked) pool += chars.lower;
-            if (document.getElementById('pwd-num').checked) pool += chars.num;
-            if (document.getElementById('pwd-sym').checked) pool += chars.sym;
-
-            if (!pool) return;
-            let result = "";
-            for (let i = 0; i < pwdLen.value; i++) {
-                result += pool.charAt(Math.floor(Math.random() * pool.length));
-            }
-            document.getElementById('pwd-result').textContent = result;
-        };
-
-        document.getElementById('copy-pwd').onclick = () => {
-            const text = document.getElementById('pwd-result').textContent;
-            if (text === "********") return;
-            
-            const el = document.createElement('textarea');
-            el.value = text;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-            
-            const icon = document.getElementById('copy-pwd').querySelector('i');
-            icon.className = "fa-solid fa-check text-green-500";
-            setTimeout(() => icon.className = "fa-solid fa-copy", 1500);
-        };
-
-        document.getElementById('current-date').textContent = new Date().toLocaleDateString('ja-JP', {
-            year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short'
-        });
-    </script>
 </body>
 </html>
