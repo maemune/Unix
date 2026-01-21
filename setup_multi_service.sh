@@ -36,12 +36,12 @@ while true; do
 <VirtualHost *:443>
     ServerName $SUBDOMAIN
 
-    SSLEngine on
-    SSLCertificateFile /etc/letsencrypt/live/$SUBDOMAIN/fullchain.pem
-    SSLCertificateKeyFile /etc/letsencrypt/live/$SUBDOMAIN/privkey.pem
-    Include /etc/letsencrypt/options-ssl-apache.conf
-    SSLUseStapling on
-    Header always set Strict-Transport-Security "max-age=31536000"
+    #SSLEngine on
+    #SSLCertificateFile /etc/letsencrypt/live/$SUBDOMAIN/fullchain.pem
+    #SSLCertificateKeyFile /etc/letsencrypt/live/$SUBDOMAIN/privkey.pem
+    #Include /etc/letsencrypt/options-ssl-apache.conf
+    #SSLUseStapling on
+    #Header always set Strict-Transport-Security "max-age=31536000"
 
     ProxyPreserveHost On
     ProxyPass "/" "http://$SERVICE_IP:$SERVICE_PORT/"
@@ -91,3 +91,4 @@ done
 echo "=============================================="
 echo "全てのサービス設定完了"
 echo "=============================================="
+sudo nano $VHOST_FILE
