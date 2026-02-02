@@ -1,5 +1,5 @@
 #!/bin/bash
-#wget https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/RockyLinux_init.sh && chmod u+x ./RockyLinux_init.sh && ./RockyLinux_init.sh
+#wget https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/RockyLinux_init.sh && nano ./RockyLinux_init.sh && chmod u+x ./RockyLinux_init.sh && ./RockyLinux_init.sh
 # RockyLinux_init.sh
 
 # User / GitHub
