@@ -75,10 +75,9 @@ chmod u+x Generat_SSH.sh
 wget -q https://raw.githubusercontent.com/maemune/Unix/main/Refresh_host.sh
 chmod u+x Refresh_host.sh
 
-wget -q https://raw.githubusercontent.com/maemune/Unix/main/Update.sh
-chmod u+x Update.sh
-sudo chown ${USERNAME}:${USERNAME} Update.sh
-sudo mv Update.sh /home/${USERNAME}/Update.sh
+wget -q https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/RockyLinux_Update.sh
+sudo chown ${USERNAME}:${USERNAME} RockyLinux_Update.sh
+sudo mv Update.sh /home/${USERNAME}/RockyLinux_Update.sh
 
 # Cron
 TMPFILE="$(mktemp)"
