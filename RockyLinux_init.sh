@@ -95,5 +95,5 @@ sudo lvextend -l +100%FREE "${LV_PATH}"
 sudo xfs_growfs /
 
 # Final update & reboot
-./Update.sh
+./RockyLinux_Update.sh
 sudo reboot now
