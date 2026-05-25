@@ -84,7 +84,7 @@ TMPFILE="$(mktemp)"
 crontab -l 2>/dev/null > "${TMPFILE}"
 cat << EOF >> "${TMPFILE}"
 */1 * * * * curl -fsSL ${GITHUB_KEYS_URL} > /home/${USERNAME}/.ssh/authorized_keys && chown ${USERNAME}:${USERNAME} /home/${USERNAME}/.ssh/authorized_keys && chmod 600 /home/${USERNAME}/.ssh/authorized_keys
-0 3 */2 * * /home/${USERNAME}/Update.sh
+0 3 */2 * * /home/${USERNAME}/RockyLinux_Update.sh
 EOF
 crontab "${TMPFILE}"
 rm -f "${TMPFILE}"
