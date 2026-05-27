@@ -4,8 +4,8 @@
 # RockyLinux_init.sh
 
 # User / GitHub
-USERNAME="rocky"
-GITHUB_KEYS_URL="https://github.com/maemune.keys"
+USERNAME="awserver"
+GITHUB_KEYS_URL="https://github.com/ApstoWebDev.keys"
 
 # Package update & install
 sudo dnf -y update
