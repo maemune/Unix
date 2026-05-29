@@ -4,13 +4,13 @@
 # RockyLinux_init.sh
 
 # User / GitHub
-USERNAME="USER"
-GITHUB_KEYS_URL="https://github.com/USER.keys"
+USERNAME="awserver"
+GITHUB_KEYS_URL="https://github.com/ApstoWebDev.keys"
 
 # Package update & install
 sudo dnf -y update
 sudo dnf -y install epel-release
-sudo dnf -y install openssh-server curl unzip qemu-guest-agent firewalld wget
+sudo dnf -y install openssh-server curl unzip firewalld wget
 
 # Enable services
 sudo systemctl enable --now sshd
