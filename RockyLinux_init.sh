@@ -15,7 +15,6 @@ sudo dnf -y install openssh-server curl unzip qemu-guest-agent firewalld wget
 # Enable services
 sudo systemctl enable --now sshd
 sudo systemctl enable --now firewalld
-sudo systemctl enable --now qemu-guest-agent
 
 # Timezone
 sudo timedatectl set-timezone Asia/Tokyo
@@ -96,4 +95,4 @@ sudo xfs_growfs /
 
 # Final update & reboot
 ./RockyLinux_Update.sh
-sudo reboot now
+## sudo reboot now
