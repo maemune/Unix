@@ -11,8 +11,8 @@ echo "${USERNAME} ALL=NOPASSWD: ALL" | sudo EDITOR='tee -a' visudo
 # Package update & install
 sudo sed -i 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://ftp.jaist.ac.jp/pub/Linux/rocky|' /etc/yum.repos.d/rocky*.repo
 sudo sed -i 's|^baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://ftp.jaist.ac.jp/pub/Linux/rocky|' /etc/yum.repos.d/rocky*.repo
-dnf clean all
-dnf makecache
+sudo dnf clean all
+sudo dnf makecache
 
 # Package update & install
 sudo dnf -y update
