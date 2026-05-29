@@ -77,7 +77,7 @@ chmod u+x Refresh_host.sh
 
 wget -q https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/RockyLinux_Update.sh
 sudo chown ${USERNAME}:${USERNAME} RockyLinux_Update.sh
-sudo mv Update.sh /home/${USERNAME}/RockyLinux_Update.sh
+sudo mv RockyLinux_Update.sh /home/${USERNAME}/RockyLinux_Update.sh
 
 # Cron
 TMPFILE="$(mktemp)"
