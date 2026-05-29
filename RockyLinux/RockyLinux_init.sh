@@ -77,7 +77,7 @@ sudo chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.ssh
 #wget -q https://raw.githubusercontent.com/maemune/Unix/main/Refresh_host.sh
 #chmod u+x /home/${USERNAME}/Refresh_host.sh
 
-wget -q https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/RockyLinux_Update.sh
+wget -q https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/RockyLinux/RockyLinux_Update.sh
 sudo chmod u+x /home/${USERNAME}/RockyLinux_Update.sh
 
 # Cron
