@@ -40,9 +40,9 @@ change_setting() {
   KEYWORD="$2"
   VALUE="$3"
 
-  if grep -q "^${KEYWORD}" "${TARGET}"; then
+  if sudo grep -q "^${KEYWORD}" "${TARGET}"; then
     sudo sed -i "s|^${KEYWORD}.*|${KEYWORD} ${VALUE}|" "${TARGET}"
-  elif grep -q "^#${KEYWORD}" "${TARGET}"; then
+  elif sudo grep -q "^#${KEYWORD}" "${TARGET}"; then
     sudo sed -i "s|^#${KEYWORD}.*|${KEYWORD} ${VALUE}|" "${TARGET}"
   else
     echo "${KEYWORD} ${VALUE}" | sudo tee -a "${TARGET}" >/dev/null
