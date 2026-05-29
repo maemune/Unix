@@ -1,7 +1,10 @@
 #!/bin/bash
-#wget https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/RockyLinux_init.sh && nano ./RockyLinux_init.sh && chmod u+x ./RockyLinux_init.sh && ./RockyLinux_init.sh
-
+#sudo dnf -y install wget && wget https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/RockyLinux_init.sh && nano ./RockyLinux_init.sh && chmod u+x ./RockyLinux_init.sh && ./RockyLinux_init.sh
 # RockyLinux_init.sh
+sed -i 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://ftp.jaist.ac.jp/pub/Linux/rocky|' /etc/yum.repos.d/rocky*.repo
+sed -i 's|^baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://ftp.jaist.ac.jp/pub/Linux/rocky|' /etc/yum.repos.d/rocky*.repo
+dnf clean all
+dnf makecache
 
 # User / GitHub
 USERNAME="USER"
