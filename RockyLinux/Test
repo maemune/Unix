@@ -1,0 +1,148 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# sudo dnf -y install wget nano && \
+# wget https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/RockyLinux/RockyLinux_init.sh && \
+# nano ./RockyLinux_init.sh && \
+# chmod u+x ./RockyLinux_init.sh && \
+# ./RockyLinux_init.sh
+
+# User / GitHub
+USERNAME="rocky"
+USER_HOME="/home/${USERNAME}"
+GITHUB_KEYS_URL="https://github.com/maemune.keys"
+
+# sudo nopasswd
+if ! sudo grep -q "^${USERNAME} ALL=NOPASSWD: ALL" /etc/sudoers; then
+  echo "${USERNAME} ALL=NOPASSWD: ALL" | sudo EDITOR='tee -a' visudo
+fi
+
+# RockyLinux repository
+sudo sed -i 's|^mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/rocky*.repo
+
+sudo sed -i \
+'s|^#baseurl=http://dl.rockylinux.org/\$contentdir|baseurl=https://ftp.jaist.ac.jp/pub/Linux/rocky|g' \
+/etc/yum.repos.d/rocky*.repo
+
+sudo sed -i \
+'s|^baseurl=http://dl.rockylinux.org/\$contentdir|baseurl=https://ftp.jaist.ac.jp/pub/Linux/rocky|g' \
+/etc/yum.repos.d/rocky*.repo
+
+sudo dnf clean all
+sudo dnf makecache
+
+# Package update & install
+sudo dnf -y update
+sudo dnf -y install epel-release
+
+sudo dnf -y install \
+openssh-server \
+curl \
+wget \
+unzip \
+firewalld \
+qemu-guest-agent
+
+# Enable services
+sudo systemctl enable --now sshd
+sudo systemctl enable --now firewalld
+sudo systemctl enable --now qemu-guest-agent
+
+# Timezone
+sudo timedatectl set-timezone Asia/Tokyo
+
+# Firewall
+sudo firewall-cmd --permanent --add-service=ssh
+sudo firewall-cmd --reload
+
+# SSH setup
+SSH_CONFIG="/etc/ssh/sshd_config"
+SSH_CONFIG_BACKUP="/etc/ssh/sshd_config.bk"
+SSH_PORT_NUMBER="22"
+
+change_setting() {
+  TARGET="$1"
+  KEYWORD="$2"
+  VALUE="$3"
+
+  if sudo grep -q "^${KEYWORD}" "${TARGET}"; then
+    sudo sed -i "s|^${KEYWORD}.*|${KEYWORD} ${VALUE}|" "${TARGET}"
+  elif sudo grep -q "^#${KEYWORD}" "${TARGET}"; then
+    sudo sed -i "s|^#${KEYWORD}.*|${KEYWORD} ${VALUE}|" "${TARGET}"
+  else
+    echo "${KEYWORD} ${VALUE}" | sudo tee -a "${TARGET}" >/dev/null
+  fi
+}
+
+if [ ! -f "${SSH_CONFIG_BACKUP}" ]; then
+  sudo cp "${SSH_CONFIG}" "${SSH_CONFIG_BACKUP}"
+
+  change_setting "${SSH_CONFIG}" Port "${SSH_PORT_NUMBER}"
+  change_setting "${SSH_CONFIG}" PermitRootLogin no
+  change_setting "${SSH_CONFIG}" PasswordAuthentication no
+  change_setting "${SSH_CONFIG}" ChallengeResponseAuthentication no
+  change_setting "${SSH_CONFIG}" KbdInteractiveAuthentication no
+  change_setting "${SSH_CONFIG}" PermitEmptyPasswords no
+  change_setting "${SSH_CONFIG}" SyslogFacility AUTHPRIV
+  change_setting "${SSH_CONFIG}" LogLevel VERBOSE
+fi
+
+sudo systemctl restart sshd
+
+# SSH key setup
+sudo mkdir -p "${USER_HOME}/.ssh"
+
+TMPKEY="$(mktemp)"
+
+if curl -fsSL "${GITHUB_KEYS_URL}" > "${TMPKEY}"; then
+  if [ -s "${TMPKEY}" ]; then
+    sudo mv "${TMPKEY}" "${USER_HOME}/.ssh/authorized_keys"
+  else
+    echo "ERROR: authorized_keys is empty"
+    exit 1
+  fi
+else
+  echo "ERROR: Failed to download GitHub keys"
+  exit 1
+fi
+
+sudo chmod 700 "${USER_HOME}/.ssh"
+sudo chmod 600 "${USER_HOME}/.ssh/authorized_keys"
+sudo chown -R ${USERNAME}:${USERNAME} "${USER_HOME}/.ssh"
+
+# SELinux context
+sudo restorecon -R "${USER_HOME}/.ssh"
+
+# External scripts
+
+# wget -q https://raw.githubusercontent.com/maemune/Unix/main/Generat_SSH.sh
+# chmod u+x ${USER_HOME}/Generat_SSH.sh
+
+# wget -q https://raw.githubusercontent.com/maemune/Unix/main/Refresh_host.sh
+# chmod u+x ${USER_HOME}/Refresh_host.sh
+
+wget -q https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/RockyLinux/Update.sh
+
+chmod 755 ./Update.sh
+sudo chown ${USERNAME}:${USERNAME} ./Update.sh
+
+# Cron
+TMPFILE="$(mktemp)"
+
+crontab -l 2>/dev/null | \
+grep -v "${GITHUB_KEYS_URL}" | \
+grep -v "Update.sh" > "${TMPFILE}"
+
+cat << EOF >> "${TMPFILE}"
+0 2 * * * TMPKEY=\$(mktemp) && curl -fsSL ${GITHUB_KEYS_URL} > \${TMPKEY} && [ -s \${TMPKEY} ] && mv \${TMPKEY} ${USER_HOME}/.ssh/authorized_keys && chown ${USERNAME}:${USERNAME} ${USER_HOME}/.ssh/authorized_keys && chmod 600 ${USER_HOME}/.ssh/authorized_keys
+0 3 */2 * * ${USER_HOME}/Update.sh
+EOF
+
+crontab "${TMPFILE}"
+rm -f "${TMPFILE}"
+
+# Final update
+./Update.sh
+
+# sudo reboot now
