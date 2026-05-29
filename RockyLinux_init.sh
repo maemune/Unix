@@ -67,11 +67,11 @@ sudo chmod 600 /home/${USERNAME}/.ssh/authorized_keys
 sudo chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.ssh
 
 # External scripts
-wget -q https://raw.githubusercontent.com/maemune/Unix/main/Generat_SSH.sh
-chmod u+x /home/${USERNAME}/Generat_SSH.sh
+#wget -q https://raw.githubusercontent.com/maemune/Unix/main/Generat_SSH.sh
+#chmod u+x /home/${USERNAME}/Generat_SSH.sh
 
-wget -q https://raw.githubusercontent.com/maemune/Unix/main/Refresh_host.sh
-chmod u+x /home/${USERNAME}/Refresh_host.sh
+#wget -q https://raw.githubusercontent.com/maemune/Unix/main/Refresh_host.sh
+#chmod u+x /home/${USERNAME}/Refresh_host.sh
 
 wget -q https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/RockyLinux_Update.sh
 sudo chmod u+x /home/${USERNAME}/RockyLinux_Update.sh
