@@ -75,8 +75,7 @@ wget -q https://raw.githubusercontent.com/maemune/Unix/main/Refresh_host.sh
 chmod u+x Refresh_host.sh
 
 wget -q https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/RockyLinux_Update.sh
-sudo chown ${USERNAME}:${USERNAME} RockyLinux_Update.sh
-sudo mv RockyLinux_Update.sh /home/${USERNAME}/RockyLinux_Update.sh
+sudo && chown ${USERNAME}:${USERNAME} /home/${USERNAME}/RockyLinux_Update.sh && chmod 600 /home/${USERNAME}/RockyLinux_Update.sh
 
 # Cron
 TMPFILE="$(mktemp)"
@@ -84,14 +83,8 @@ crontab -l 2>/dev/null > "${TMPFILE}"
 cat << EOF >> "${TMPFILE}"
 0 2 */1 * * curl -fsSL ${GITHUB_KEYS_URL} > /home/${USERNAME}/.ssh/authorized_keys && chown ${USERNAME}:${USERNAME} /home/${USERNAME}/.ssh/authorized_keys && chmod 600 /home/${USERNAME}/.ssh/authorized_keys
 0 3 */2 * * /home/${USERNAME}/RockyLinux_Update.sh
-EOF
 crontab "${TMPFILE}"
 rm -f "${TMPFILE}"
-
-# Storage extend (auto detect LVM)
-LV_PATH=$(df / | tail -1 | awk '{print $1}')
-sudo lvextend -l +100%FREE "${LV_PATH}"
-sudo xfs_growfs /
 
 # Final update & reboot
 ./RockyLinux_Update.sh
