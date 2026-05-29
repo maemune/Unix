@@ -17,7 +17,7 @@ dnf makecache
 # Package update & install
 sudo dnf -y update
 sudo dnf -y install epel-release
-sudo dnf -y install openssh-server curl unzip firewalld
+sudo dnf -y install openssh-server curl unzip firewalld qemu-guest-agent
 
 # Enable services
 sudo systemctl enable --now sshd
