@@ -4,8 +4,8 @@
 # RockyLinux_init.sh
 
 # User / GitHub
-USERNAME="awserver"
-GITHUB_KEYS_URL="https://github.com/ApstoWebDev.keys"
+USERNAME="USER"
+GITHUB_KEYS_URL="https://github.com/USER.keys"
 
 # Package update & install
 sudo dnf -y update
