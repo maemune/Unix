@@ -67,15 +67,15 @@ sudo chmod 600 /home/${USERNAME}/.ssh/authorized_keys
 sudo chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.ssh
 
 # External scripts
-wget -q https://raw.githubusercontent.com/maemune/Unix/main/Generat_SSH.sh
-chmod u+x Generat_SSH.sh
-./Generat_SSH.sh
+#wget -q https://raw.githubusercontent.com/maemune/Unix/main/Generat_SSH.sh
+#chmod u+x Generat_SSH.sh
+#./Generat_SSH.sh
 
-wget -q https://raw.githubusercontent.com/maemune/Unix/main/Refresh_host.sh
-chmod u+x Refresh_host.sh
+#wget -q https://raw.githubusercontent.com/maemune/Unix/main/Refresh_host.sh
+#chmod u+x Refresh_host.sh
 
 wget -q https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/RockyLinux_Update.sh
-sudo && chown ${USERNAME}:${USERNAME} /home/${USERNAME}/RockyLinux_Update.sh && chmod 600 /home/${USERNAME}/RockyLinux_Update.sh
+sudo chown ${USERNAME}:${USERNAME} /home/${USERNAME}/RockyLinux_Update.sh && chmod u+x /home/${USERNAME}/RockyLinux_Update.sh
 
 # Cron
 TMPFILE="$(mktemp)"
@@ -83,6 +83,7 @@ crontab -l 2>/dev/null > "${TMPFILE}"
 cat << EOF >> "${TMPFILE}"
 0 2 */1 * * curl -fsSL ${GITHUB_KEYS_URL} > /home/${USERNAME}/.ssh/authorized_keys && chown ${USERNAME}:${USERNAME} /home/${USERNAME}/.ssh/authorized_keys && chmod 600 /home/${USERNAME}/.ssh/authorized_keys
 0 3 */2 * * /home/${USERNAME}/RockyLinux_Update.sh
+EOF
 crontab "${TMPFILE}"
 rm -f "${TMPFILE}"
 
