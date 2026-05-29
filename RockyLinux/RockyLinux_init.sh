@@ -91,6 +91,6 @@ crontab "${TMPFILE}"
 rm -f "${TMPFILE}"
 
 # Final update & reboot
-./RockyLinux_Update.sh
+./Update.sh
 # sudo reboot now
 
