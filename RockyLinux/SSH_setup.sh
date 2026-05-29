@@ -1,3 +1,5 @@
+#!/bin/bash
+#wget https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/RockyLinux/SSH_setup.sh && nano ./SSH_setup.sh && chmod u+x ./SSH_setup.sh
 # SSH setup
 SSH_CONFIG="/etc/ssh/sshd_config"
 SSH_CONFIG_BACKUP="/etc/ssh/sshd_config.bk"
