@@ -1,0 +1,32 @@
+# SSH setup
+SSH_CONFIG="/etc/ssh/sshd_config"
+SSH_CONFIG_BACKUP="/etc/ssh/sshd_config.bk"
+SSH_PORT_NUMBER="22"
+
+change_setting() {
+  TARGET="$1"
+  KEYWORD="$2"
+  VALUE="$3"
+
+  if sudo grep -q "^${KEYWORD}" "${TARGET}"; then
+    sudo sed -i "s|^${KEYWORD}.*|${KEYWORD} ${VALUE}|" "${TARGET}"
+  elif sudo grep -q "^#${KEYWORD}" "${TARGET}"; then
+    sudo sed -i "s|^#${KEYWORD}.*|${KEYWORD} ${VALUE}|" "${TARGET}"
+  else
+    echo "${KEYWORD} ${VALUE}" | sudo tee -a "${TARGET}" >/dev/null
+  fi
+}
+
+if [ ! -f "${SSH_CONFIG_BACKUP}" ]; then
+  sudo cp "${SSH_CONFIG}" "${SSH_CONFIG_BACKUP}"
+
+  change_setting "${SSH_CONFIG}" Port "${SSH_PORT_NUMBER}"
+  change_setting "${SSH_CONFIG}" PermitRootLogin no
+  change_setting "${SSH_CONFIG}" PasswordAuthentication no
+  change_setting "${SSH_CONFIG}" ChallengeResponseAuthentication no
+  change_setting "${SSH_CONFIG}" PermitEmptyPasswords no
+  change_setting "${SSH_CONFIG}" SyslogFacility AUTHPRIV
+  change_setting "${SSH_CONFIG}" LogLevel VERBOSE
+fi
+
+sudo systemctl restart sshd
