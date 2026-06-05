@@ -1,6 +1,5 @@
 #!/bin/bash
 #sudo dnf -y install wget nano && wget https://raw.githubusercontent.com/maemune/Unix/refs/heads/main/RockyLinux/RockyLinux_init.sh && nano ./RockyLinux_init.sh && chmod u+x ./RockyLinux_init.sh && ./RockyLinux_init.sh
-
 # User / GitHub
 USERNAME="rocky"
 GITHUB_KEYS_URL="https://github.com/maemune.keys"
