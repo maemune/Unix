@@ -107,5 +107,5 @@ rm -f "${TMPFILE}"
 
 # Final update & reboot
 ./Update.sh
-# sudo reboot now
+sudo reboot now
 
