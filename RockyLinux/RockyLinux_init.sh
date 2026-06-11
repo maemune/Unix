@@ -67,7 +67,7 @@ sudo systemctl restart sshd
 
 # SSH key setup
 sudo mkdir -p /home/${USERNAME}/.ssh
-curl -fsSL "${GITHUB_KEYS_URL}" > "authorized_keys"
+curl -fsSL "${GITHUB_KEYS_URL}" | sudo tee /home/${USERNAME}/.ssh/authorized_keys >/dev/null
 sudo chmod 700 /home/${USERNAME}/.ssh
 sudo chmod 600 /home/${USERNAME}/.ssh/authorized_keys
 sudo chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.ssh
