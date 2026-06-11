@@ -5,9 +5,7 @@ USERNAME="rocky"
 GITHUB_KEYS_URL="https://github.com/maemune.keys"
 
 # sudo nopasswd
-if ! sudo grep -q "^${USERNAME} ALL=NOPASSWD: ALL" /etc/sudoers; then
-  echo "${USERNAME} ALL=NOPASSWD: ALL" | sudo EDITOR='tee -a' visudo
-fi
+echo "${USERNAME} ALL=NOPASSWD: ALL" | sudo EDITOR='tee -a' visudo
 
 # Package update & install# RockyLinux repository
 sudo sed -i 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://ftp.jaist.ac.jp/pub/Linux/rocky|' /etc/yum.repos.d/rocky*.repo
