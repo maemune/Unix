@@ -67,19 +67,7 @@ sudo systemctl restart sshd
 
 # SSH key setup
 sudo mkdir -p /home/${USERNAME}/.ssh
-TMPKEY="$(mktemp)"
-
-if curl -fsSL "${GITHUB_KEYS_URL}" > "${TMPKEY}"; then
-  if [ -s "${TMPKEY}" ]; then
-    sudo mv "${TMPKEY}" "${USER_HOME}/.ssh/authorized_keys"
-  else
-    echo "ERROR: authorized_keys is empty"
-    exit 1
-  fi
-else
-  echo "ERROR: Failed to download GitHub keys"
-  exit 1
-fi
+curl -fsSL "${GITHUB_KEYS_URL}" > "authorized_keys"
 sudo chmod 700 /home/${USERNAME}/.ssh
 sudo chmod 600 /home/${USERNAME}/.ssh/authorized_keys
 sudo chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.ssh
