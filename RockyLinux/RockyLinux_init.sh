@@ -5,9 +5,12 @@ USERNAME="rocky"
 GITHUB_KEYS_URL="https://github.com/maemune.keys"
 
 # sudo nopasswd
-echo "${USERNAME} ALL=NOPASSWD: ALL" | sudo EDITOR='tee -a' visudo
+if ! sudo grep -q "^${USERNAME} ALL=NOPASSWD: ALL" /etc/sudoers; then
+  echo "${USERNAME} ALL=NOPASSWD: ALL" | sudo EDITOR='tee -a' visudo
+fi
 
-# Package update & install
+# Package update & install# RockyLinux repository
+sudo sed -i 's|^mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/rocky*.repo
 sudo sed -i 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://ftp.jaist.ac.jp/pub/Linux/rocky|' /etc/yum.repos.d/rocky*.repo
 sudo sed -i 's|^baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://ftp.jaist.ac.jp/pub/Linux/rocky|' /etc/yum.repos.d/rocky*.repo
 sudo dnf clean all
@@ -55,6 +58,7 @@ if [ ! -f "${SSH_CONFIG_BACKUP}" ]; then
   change_setting "${SSH_CONFIG}" PermitRootLogin no
   change_setting "${SSH_CONFIG}" PasswordAuthentication no
   change_setting "${SSH_CONFIG}" ChallengeResponseAuthentication no
+  change_setting "${SSH_CONFIG}" KbdInteractiveAuthentication no
   change_setting "${SSH_CONFIG}" PermitEmptyPasswords no
   change_setting "${SSH_CONFIG}" SyslogFacility AUTHPRIV
   change_setting "${SSH_CONFIG}" LogLevel VERBOSE
@@ -64,7 +68,19 @@ sudo systemctl restart sshd
 
 # SSH key setup
 sudo mkdir -p /home/${USERNAME}/.ssh
-curl -fsSL "${GITHUB_KEYS_URL}" | sudo tee /home/${USERNAME}/.ssh/authorized_keys >/dev/null
+TMPKEY="$(mktemp)"
+
+if curl -fsSL "${GITHUB_KEYS_URL}" > "${TMPKEY}"; then
+  if [ -s "${TMPKEY}" ]; then
+    sudo mv "${TMPKEY}" "${USER_HOME}/.ssh/authorized_keys"
+  else
+    echo "ERROR: authorized_keys is empty"
+    exit 1
+  fi
+else
+  echo "ERROR: Failed to download GitHub keys"
+  exit 1
+fi
 sudo chmod 700 /home/${USERNAME}/.ssh
 sudo chmod 600 /home/${USERNAME}/.ssh/authorized_keys
 sudo chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.ssh
