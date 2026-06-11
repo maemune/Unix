@@ -10,7 +10,6 @@ if ! sudo grep -q "^${USERNAME} ALL=NOPASSWD: ALL" /etc/sudoers; then
 fi
 
 # Package update & install# RockyLinux repository
-sudo sed -i 's|^mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/rocky*.repo
 sudo sed -i 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://ftp.jaist.ac.jp/pub/Linux/rocky|' /etc/yum.repos.d/rocky*.repo
 sudo sed -i 's|^baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://ftp.jaist.ac.jp/pub/Linux/rocky|' /etc/yum.repos.d/rocky*.repo
 sudo dnf clean all
