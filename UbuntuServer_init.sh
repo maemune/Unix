@@ -61,7 +61,7 @@ sudo chmod 700 /home/ubuntu/.ssh
 sudo chmod 600 /home/ubuntu/.ssh/authorized_keys
 sudo chown -R ubuntu:ubuntu /home/ubuntu/.ssh
 
-sudo systemctl restart sshd.service
+sudo systemctl restart ssh.service
 
 # External scripts
 wget -q https://raw.githubusercontent.com/maemune/Unix/main/Generat_SSH.sh
