@@ -13,4 +13,4 @@ sudo nano /etc/samba/smb.conf
     read only = no
 """
 sudo ufw allow Samba
-sudo smbpasswd -a maemune
+sudo smbpasswd -a ubuntu
